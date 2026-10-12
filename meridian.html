@@ -1,0 +1,1231 @@
+<title>Meridian Longevity Expo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout concept: editorial exhibition catalogue. Huge grotesque headlines, one serif italic word per headline,
+   mono metadata, pill controls. Imagery is generated on canvas from the palette (placeholders for real photography). */
+:root{
+  --bg:#F1EFE8; --bg2:#E5E2D6; --card:#FAF9F4; --fg:#0F1A14; --muted:#53615A; --line:rgba(15,26,20,.16);
+  --forest:#12301F; --sage:#9DAF98; --olive:#6B7345; --champagne:#C9B58A; --lime:#C6F23A; --ink:#0A110D; --paper:#EDEBE1;
+  --focus:#1B6B3E;
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --sans:"Figtree","Helvetica Neue",Arial,sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.22,.8,.24,1);
+  --gut:clamp(16px,3vw,40px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B120E;--bg2:#121C16;--card:#16211A;--fg:#EDEBE1;--muted:#9AA79F;--line:rgba(237,235,225,.16);--focus:#C6F23A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B120E;--bg2:#121C16;--card:#16211A;--fg:#EDEBE1;--muted:#9AA79F;--line:rgba(237,235,225,.16);--focus:#C6F23A;color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font:400 1rem/1.6 var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img,canvas,svg{max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:6px}
+.dark :focus-visible,.hero-dark :focus-visible{outline-color:var(--lime)}
+section[id],footer[id]{scroll-margin-top:90px}
+.wrap{width:min(1320px,100%);margin-inline:auto;padding-inline:var(--gut)}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:fixed;left:16px;top:-80px;z-index:200;background:var(--lime);color:#0B1409;padding:.6em 1em;border-radius:999px;font-weight:600;transition:top .2s}
+.skip:focus{top:12px}
+
+/* type */
+.mono{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase}
+.h1,.h2{font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:-.03em;line-height:.92;text-wrap:balance;margin:0}
+.h1{font-size:clamp(2.4rem,9vw,8.8rem)}
+.h2{font-size:clamp(2.1rem,6.2vw,5.6rem)}
+.serif{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;letter-spacing:-.01em;font-size:1.08em}
+.lede{font-size:clamp(1.05rem,1.5vw,1.3rem);line-height:1.5;color:var(--muted);max-width:46ch;margin:0}
+.eyebrow{display:flex;align-items:center;gap:.7em;color:var(--muted)}
+.eyebrow::before{content:"";width:28px;height:1px;background:currentColor}
+
+/* pills + buttons */
+.pill{display:inline-flex;align-items:center;gap:.55em;padding:.55em 1.05em;border:1px solid var(--line);border-radius:999px;font:500 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;transition:background .3s var(--ease),color .3s,border-color .3s,transform .3s var(--ease)}
+.pill--solid{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 3px rgba(198,242,58,.25)}
+button.pill:hover{border-color:var(--fg);transform:translateY(-1px)}
+button.pill:active{transform:scale(.97)}
+button.pill[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:.8em;padding:.5em .5em .5em 1.6em;min-height:54px;border-radius:999px;font:600 .98rem var(--sans);text-decoration:none;border:1px solid transparent;transition:transform .35s var(--ease),background .3s,box-shadow .3s}
+.btn .arr{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--lime);transition:transform .4s var(--ease)}
+.btn .arr svg{width:18px;height:18px}
+.btn:hover .arr{transform:rotate(-45deg)}
+.btn:active{transform:scale(.97)}
+.btn--lime{background:var(--lime);color:#0B1409}
+.btn--lime:hover{box-shadow:0 10px 30px -10px rgba(198,242,58,.6)}
+.btn--ink{background:var(--fg);color:var(--bg)}
+.btn--ink .arr{background:var(--lime);color:#0B1409}
+.btn--line{border-color:var(--line);padding-left:1.6em}
+.btn--line:hover{border-color:var(--fg)}
+.btn--line .arr{background:var(--fg);color:var(--bg)}
+.dark .btn--line,.hero-dark .btn--line{border-color:rgba(237,235,225,.35)}
+.dark .btn--line .arr{background:var(--paper);color:var(--ink)}
+.ic{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* nav */
+.nav{position:fixed;z-index:100;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 12px);padding-inline:var(--gut);pointer-events:none;animation:navIn .9s var(--ease) both}
+.nav__bar{pointer-events:auto;width:min(1180px,100%);margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 8px 8px 20px;border-radius:999px;background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);border:1px solid var(--line)}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font:800 1.05rem var(--display);letter-spacing:.14em;text-transform:uppercase}
+.brand svg{width:26px;height:26px}
+.nav__links{display:flex;gap:2px;list-style:none;margin:0;padding:0}
+.nav__links a{display:block;padding:.55em 1em;border-radius:999px;text-decoration:none;font-size:.88rem;font-weight:500;color:var(--muted);transition:background .3s,color .3s}
+.nav__links a:hover{color:var(--fg);background:var(--bg2)}
+.nav__links a[aria-current="true"]{color:var(--bg);background:var(--fg)}
+.nav__cta{display:inline-flex;align-items:center;gap:.5em;padding:.8em 1.3em;border-radius:999px;background:var(--lime);color:#0B1409;text-decoration:none;font-weight:600;font-size:.9rem;transition:transform .3s var(--ease)}
+.nav__cta:hover{transform:scale(1.04)}
+.menu-btn{display:none;pointer-events:auto}
+.mmenu{position:fixed;inset:0;z-index:99;background:var(--ink);color:var(--paper);padding:calc(env(safe-area-inset-top,0px) + 96px) var(--gut) 32px;display:flex;flex-direction:column;justify-content:space-between;clip-path:inset(0 0 100% 0);visibility:hidden;transition:clip-path .6s var(--ease),visibility 0s .6s}
+.mmenu.open{clip-path:inset(0);visibility:visible;transition:clip-path .6s var(--ease)}
+.mmenu ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.mmenu a{display:block;font:800 clamp(2rem,9vw,3rem)/1.15 var(--display);text-transform:uppercase;letter-spacing:-.02em;text-decoration:none;padding:.15em 0;border-bottom:1px solid rgba(237,235,225,.14)}
+.mmenu a:hover{color:var(--lime)}
+@media (max-width:980px){
+  .nav__links,.nav__cta--d{display:none}
+  .menu-btn{display:inline-flex}
+  .nav__bar{padding:8px 8px 8px 18px}
+}
+@keyframes navIn{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}
+
+/* hero */
+.hero{padding-top:clamp(112px,14vw,150px);padding-bottom:clamp(40px,6vw,80px);position:relative;overflow:hidden}
+.hero__meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:clamp(20px,3vw,36px);animation:rise .8s .25s var(--ease) both}
+.hero h1 .ln{display:block;overflow:hidden;padding-bottom:.07em;margin-bottom:-.07em}
+.hero h1 .ln>span{display:block;animation:lineUp 1s var(--ease) both}
+.hero h1 .ln:nth-child(1)>span{animation-delay:.4s}
+.hero h1 .ln:nth-child(2)>span{animation-delay:.52s}
+.hero__grid{display:grid;grid-template-columns:5fr 7fr;gap:clamp(24px,4vw,64px);margin-top:clamp(28px,4vw,56px);align-items:end}
+.hero__copy{display:grid;gap:28px;min-width:0}
+.hero__copy .lede{animation:rise .9s .85s var(--ease) both}
+.hero__cta{display:flex;flex-wrap:wrap;gap:12px;animation:rise .9s 1s var(--ease) both}
+.scrollcue{display:inline-flex;align-items:center;gap:12px;color:var(--muted);text-decoration:none;animation:rise .9s 1.15s var(--ease) both;width:max-content}
+.scrollcue i{width:22px;height:36px;border:1px solid var(--line);border-radius:999px;position:relative}
+.scrollcue i::after{content:"";position:absolute;left:50%;top:7px;width:4px;height:7px;margin-left:-2px;border-radius:4px;background:var(--fg);animation:cue 1.8s var(--ease) infinite}
+.hero__vis{position:relative;min-width:0;animation:rise 1s .6s var(--ease) both}
+.panel{position:relative;border-radius:32px;overflow:hidden;aspect-ratio:5/4;background:var(--forest)}
+.panel canvas{width:100%;height:100%;object-fit:cover;display:block;animation:scaleIn 1.8s .5s var(--ease) both}
+.arch{position:absolute;left:-4%;bottom:-8%;width:30%;aspect-ratio:3/4;border-radius:999px 999px 22px 22px;overflow:hidden;border:6px solid var(--bg);background:var(--sage)}
+.arch canvas{width:100%;height:100%;object-fit:cover;display:block}
+.orbtag{position:absolute;right:-2%;top:-5%;width:clamp(78px,11vw,128px);aspect-ratio:1;border-radius:50%;overflow:hidden;border:6px solid var(--bg)}
+.orbtag canvas{width:100%;height:100%;object-fit:cover;display:block}
+.float{position:absolute;background:rgba(237,235,225,.92);color:#0F1A14;border-color:transparent;backdrop-filter:blur(8px);animation:bob 6s ease-in-out infinite}
+.float.f1{left:5%;top:7%}
+.float.f2{right:5%;bottom:20%;animation-delay:-2s}
+.float.f3{left:34%;bottom:6%;animation-delay:-4s}
+.info{display:grid;grid-template-columns:repeat(4,1fr);margin-top:clamp(36px,5vw,72px);border-block:1px solid var(--line);animation:rise .9s 1.2s var(--ease) both}
+.info>div{padding:20px 20px 20px 0;display:grid;gap:6px;min-width:0}
+.info>div+div{padding-left:20px;border-left:1px solid var(--line)}
+.info b{font:600 1.15rem/1.25 var(--display);letter-spacing:-.01em}
+.info .mono{color:var(--muted)}
+@media (max-width:900px){
+  .hero__grid{grid-template-columns:1fr}
+  .info{grid-template-columns:1fr 1fr}
+  .info>div:nth-child(3){padding-left:0;border-left:0}
+  .info>div:nth-child(n+3){border-top:1px solid var(--line)}
+  .float.f3{display:none}
+}
+@keyframes lineUp{from{transform:translateY(105%)}to{transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes scaleIn{from{transform:scale(1.14)}to{transform:scale(1)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes cue{0%{transform:translateY(0);opacity:1}70%{transform:translateY(12px);opacity:0}100%{opacity:0}}
+
+/* generic section */
+.sec{padding-block:clamp(72px,10vw,150px)}
+.sec__head{display:grid;grid-template-columns:1fr auto;gap:24px 40px;align-items:end;margin-bottom:clamp(32px,5vw,64px)}
+.sec__head .eyebrow{grid-column:1/-1}
+.note{color:var(--muted);font:400 .74rem/1.4 var(--mono);letter-spacing:.04em;max-width:34ch}
+@media (max-width:760px){.sec__head{grid-template-columns:1fr}}
+.rv{transition:transform .9s var(--ease)}
+.rv.pre{transform:translateY(34px)}
+
+/* intro */
+.intro__top{display:grid;grid-template-columns:8fr 4fr;gap:clamp(24px,5vw,80px);align-items:end}
+.intro__top .lede{padding-bottom:.6em}
+.intro__img{position:relative;margin-top:clamp(32px,5vw,64px);border-radius:32px;overflow:hidden;aspect-ratio:21/9;background:var(--forest)}
+.intro__img canvas{width:100%;height:100%;object-fit:cover;display:block}
+.intro__img .pills{position:absolute;left:20px;bottom:20px;right:20px}
+.intro__img .pill{background:rgba(237,235,225,.92);color:#0F1A14;border-color:transparent}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);margin-top:clamp(28px,4vw,48px)}
+.stats>div{padding:8px 24px 8px 0;display:grid;gap:4px}
+.stats>div+div{padding-left:24px;border-left:1px solid var(--line)}
+.stats b{font:800 clamp(2.4rem,5vw,4.4rem)/1 var(--display);letter-spacing:-.04em}
+.stats span{color:var(--muted);font-size:.92rem}
+@media (max-width:900px){
+  .intro__top{grid-template-columns:1fr}
+  .intro__img{aspect-ratio:4/3}
+  .stats{grid-template-columns:1fr 1fr;row-gap:24px}
+  .stats>div:nth-child(3){padding-left:0;border-left:0}
+}
+
+/* speakers */
+.spk-grid{display:grid;gap:14px;grid-template-columns:repeat(2,1fr);grid-auto-rows:300px}
+.spk{position:relative;display:block;text-align:left;border-radius:28px;overflow:hidden;background:var(--forest);color:#EDEBE1;isolation:isolate;min-width:0}
+.spk canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1.1s var(--ease)}
+.spk::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgba(5,10,7,.82),rgba(5,10,7,0) 62%)}
+.spk:hover canvas,.spk:focus-visible canvas{transform:scale(1.08)}
+.spk__mono{position:absolute;right:18px;bottom:14px;font:800 clamp(4rem,9vw,8rem)/1 var(--display);letter-spacing:-.06em;opacity:.16;z-index:-1;transition:transform .8s var(--ease),opacity .6s}
+.spk:hover .spk__mono{transform:translate(-10px,-10px);opacity:.28}
+.spk__top{position:absolute;left:18px;right:18px;top:18px;display:flex;justify-content:space-between;align-items:center}
+.spk .tag{background:rgba(237,235,225,.92);color:#0F1A14;border-color:transparent}
+.spk:hover .tag{background:var(--lime);transform:translateX(4px)}
+.spk__arrow{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(237,235,225,.16);backdrop-filter:blur(6px);transition:transform .5s var(--ease),background .3s,color .3s}
+.spk:hover .spk__arrow{background:var(--lime);color:#0B1409;transform:rotate(-45deg)}
+.spk__body{position:absolute;left:20px;right:20px;bottom:18px;display:grid}
+.spk__name{font:800 clamp(1.3rem,2vw,1.8rem)/1.05 var(--display);letter-spacing:-.02em}
+.spk__role{font-size:.88rem;opacity:.82;margin-top:4px}
+.spk__more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s var(--ease)}
+.spk__more>div{overflow:hidden;min-height:0}
+.spk:hover .spk__more,.spk:focus-visible .spk__more{grid-template-rows:1fr}
+.spk__topic{display:block;margin-top:12px;font:italic 400 1.12rem/1.25 var(--serif)}
+.spk__link{display:inline-block;margin-top:8px;color:var(--lime)}
+@media (hover:none){.spk__more{grid-template-rows:1fr}}
+.spk--a{grid-row:span 2}
+.spk--a .spk__name{font-size:clamp(1.8rem,3vw,2.6rem)}
+@media (min-width:640px) and (max-width:900px){.spk--a{grid-column:span 2;grid-row:span 1}.spk--a .spk__mono{font-size:9rem}}
+@media (max-width:639px){.spk-grid{grid-template-columns:1fr;grid-auto-rows:340px}.spk--a{grid-row:span 1}}
+@media (min-width:901px){
+  .spk-grid{grid-template-columns:repeat(4,1fr);grid-auto-rows:270px}
+  .spk--a{grid-column:1/3;grid-row:1/3}
+  .spk--b{grid-column:3;grid-row:1}
+  .spk--c{grid-column:4;grid-row:1}
+  .spk--d{grid-column:3/5;grid-row:2}
+  .spk--e{grid-column:1;grid-row:3/5}
+  .spk--f{grid-column:2/4;grid-row:3}
+  .spk--g{grid-column:4;grid-row:3/5}
+  .spk--h{grid-column:2/4;grid-row:4}
+}
+
+/* zones */
+.zones{background:var(--bg2)}
+.zone-tools{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.round-btns{display:flex;gap:8px}
+.rbtn{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:background .3s,color .3s,transform .3s var(--ease),border-color .3s}
+.rbtn:hover{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.rbtn:active{transform:scale(.92)}
+.rbtn svg{width:20px;height:20px}
+.track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-block:4px;-webkit-overflow-scrolling:touch}
+.track::-webkit-scrollbar{display:none}
+.zone{position:relative;flex:0 0 min(78vw,340px);height:480px;border-radius:28px;overflow:hidden;scroll-snap-align:start;color:#EDEBE1;isolation:isolate;background:var(--forest)}
+.zone canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1.2s var(--ease)}
+.zone::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgba(5,10,7,.8),rgba(5,10,7,0) 60%)}
+.zone:hover canvas,.zone:focus-within canvas,.zone:focus canvas{transform:scale(1.09)}
+.zone__top{position:absolute;left:18px;right:18px;top:18px;display:flex;justify-content:space-between;align-items:center}
+.zone .tag{background:rgba(237,235,225,.92);color:#0F1A14;border-color:transparent}
+.zone .code{opacity:.85}
+.zone__body{position:absolute;left:22px;right:22px;bottom:22px}
+.zone h3{margin:0;font:800 clamp(1.5rem,2.2vw,2rem)/1 var(--display);letter-spacing:-.025em;text-transform:uppercase}
+.zone__more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s var(--ease)}
+.zone__more>p{overflow:hidden;min-height:0;margin:0;font-size:.95rem;line-height:1.45}
+.zone:hover .zone__more,.zone:focus .zone__more,.zone:focus-within .zone__more{grid-template-rows:1fr}
+.zone__more p span{display:block;padding-top:12px}
+@media (hover:none){.zone__more{grid-template-rows:1fr}}
+.zone-empty{padding:40px 0;color:var(--muted)}
+
+/* immersive */
+.dark{--bg:#0A110D;--fg:#EDEBE1;--muted:#9AA79F;--line:rgba(237,235,225,.18);background:var(--bg);color:var(--fg)}
+.immersive{position:relative;overflow:hidden;padding-block:clamp(64px,9vw,120px)}
+.immersive__media{position:absolute;inset:0;clip-path:inset(var(--in,8%) var(--in,8%) round 40px);overflow:hidden;background:#07100B}
+.immersive__media canvas{position:absolute;left:0;top:-10%;width:100%;height:120%;object-fit:cover;opacity:.9;will-change:transform}
+.immersive__media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,12,9,.78),rgba(7,12,9,.1) 70%)}
+.immersive .wrap{position:relative;display:grid;gap:clamp(28px,4vw,56px);padding-block:clamp(40px,8vw,120px)}
+.immersive .h2{font-size:clamp(2.3rem,7.4vw,7rem)}
+.immersive__foot{display:flex;flex-wrap:wrap;gap:24px 40px;align-items:center}
+.immersive p.lede{color:rgba(237,235,225,.8)}
+
+/* schedule */
+.sched-tools{display:grid;gap:18px;margin-bottom:28px}
+.sched-tools .row{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between}
+.days .pill{padding:.75em 1.3em;font-size:.78rem}
+.days .pill small{opacity:.65;font-size:.9em}
+.sess-list{display:grid;border-top:1px solid var(--line)}
+.sess{display:grid;grid-template-columns:150px 1fr auto;gap:12px 32px;padding:26px 0;border-bottom:1px solid var(--line);align-items:start;animation:rise .6s var(--ease) both}
+.sess__time{font:500 1.05rem var(--mono);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.sess__time small{display:block;color:var(--muted);font-size:.72rem;margin-top:4px;letter-spacing:.06em}
+.sess h3{margin:0 0 6px;font:600 clamp(1.25rem,2vw,1.7rem)/1.15 var(--display);letter-spacing:-.02em}
+.sess p{margin:0;color:var(--muted);max-width:60ch}
+.sess__who{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.9rem}
+.sess__side{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.badge-Talk{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.badge-Workshop{background:var(--champagne);color:#1b1608;border-color:transparent}
+.badge-Demonstration{background:var(--sage);color:#0f1a14;border-color:transparent}
+.badge-Fitness{background:var(--lime);color:#0b1409;border-color:transparent}
+.empty{padding:56px 24px;text-align:center;border:1px dashed var(--line);border-radius:28px;margin-top:16px;display:grid;gap:14px;justify-items:center}
+.empty b{font:800 1.8rem var(--display);letter-spacing:-.02em;text-transform:uppercase}
+@media (max-width:760px){
+  .sess{grid-template-columns:1fr}
+  .sess__side{flex-direction:row;align-items:center;flex-wrap:wrap}
+}
+
+/* exhibitors */
+.exh{background:var(--bg2)}
+.exh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:28px;overflow:hidden}
+.ex{position:relative;background:var(--bg2);min-height:190px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;transition:background .4s var(--ease),color .4s;min-width:0}
+.ex:hover,.ex:focus-visible{background:var(--forest);color:#EDEBE1}
+.ex .mark{font-size:clamp(1.3rem,2.2vw,1.9rem);line-height:1.05;letter-spacing:-.02em;overflow-wrap:anywhere}
+.ex .m1{font-family:var(--display);font-weight:800;text-transform:uppercase}
+.ex .m2{font-family:var(--serif);font-style:italic;font-size:clamp(1.6rem,2.6vw,2.3rem)}
+.ex .m3{font-family:var(--mono);font-weight:500;letter-spacing:.1em;text-transform:uppercase;font-size:clamp(1rem,1.5vw,1.25rem)}
+.ex .m4{font-family:var(--display);font-weight:400;letter-spacing:-.04em}
+.ex__foot{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);transition:color .3s}
+.ex:hover .ex__foot{color:var(--lime)}
+.exh-cta{display:flex;flex-wrap:wrap;gap:20px 32px;align-items:center;justify-content:space-between;margin-top:32px}
+@media (max-width:980px){.exh-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){.exh-grid{grid-template-columns:repeat(2,1fr)}.ex{min-height:150px;padding:16px}}
+
+/* tickets */
+.tix{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch}
+.tk{position:relative;display:flex;flex-direction:column;gap:22px;text-align:left;padding:32px;border-radius:32px;border:1px solid var(--line);background:var(--card);transition:transform .5s var(--ease),border-color .3s,box-shadow .4s;min-width:0}
+.tk:hover{transform:translateY(-6px);box-shadow:0 24px 50px -28px rgba(10,20,14,.5)}
+.tk h3{margin:0;font:800 1.7rem/1 var(--display);letter-spacing:-.025em;text-transform:uppercase}
+.tk .price{font:800 clamp(3rem,5vw,4.4rem)/1 var(--display);letter-spacing:-.05em;display:flex;align-items:baseline;gap:8px}
+.tk .price small{font:400 .75rem var(--mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.tk ul{list-style:none;margin:0;padding:0;display:grid;gap:12px;flex:1;align-content:start}
+.tk li{display:flex;gap:12px;align-items:flex-start;font-size:.97rem;line-height:1.4}
+.tk li svg{flex:none;width:18px;height:18px;margin-top:2px;color:var(--olive);stroke-width:2.4}
+.tk[aria-pressed="true"]{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.tk .sel{display:inline-flex;align-items:center;gap:.5em}
+.tk--feat{background:var(--forest);color:#EDEBE1;border-color:var(--forest)}
+.tk--feat li svg{color:var(--lime)}
+.tk--feat .price small{color:#9AA79F}
+.tk--feat[aria-pressed="true"]{box-shadow:0 0 0 3px var(--lime)}
+.tk__flag{position:absolute;right:20px;top:20px}
+.tk--feat .pill{border-color:rgba(237,235,225,.3)}
+.tk__sel{margin-top:4px;display:flex;align-items:center;justify-content:space-between;padding:14px 16px 14px 22px;border-radius:999px;border:1px solid var(--line);font-weight:600;font-size:.95rem;transition:background .3s,color .3s}
+.tk[aria-pressed="true"] .tk__sel{background:var(--lime);color:#0B1409;border-color:var(--lime)}
+.tk--feat .tk__sel{border-color:rgba(237,235,225,.3)}
+.tixbar{margin-top:20px;display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;justify-content:space-between;padding:14px 14px 14px 28px;border-radius:999px;background:var(--fg);color:var(--bg)}
+.tixbar .btn--lime .arr{background:var(--ink)}
+@media (max-width:980px){.tix{grid-template-columns:1fr}.tixbar{border-radius:28px;padding:20px}}
+
+/* venue */
+.venue{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(24px,4vw,64px);align-items:stretch}
+.venue__img{position:relative;border-radius:32px;overflow:hidden;min-height:520px;background:var(--forest)}
+.venue__img canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.venue__img .pills{position:absolute;left:20px;top:20px}
+.venue__img .pill{background:rgba(237,235,225,.92);color:#0F1A14;border-color:transparent}
+.venue__info{display:grid;gap:28px;align-content:start;min-width:0}
+.dl{display:grid;border-top:1px solid var(--line);margin:0}
+.dl>div{display:grid;grid-template-columns:140px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
+.dl dt{color:var(--muted)}
+.dl dd{margin:0}
+.map{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:16/8;border:1px solid var(--line);background:var(--bg2)}
+.map svg{position:absolute;inset:0;width:100%;height:100%}
+.map .pill{position:absolute;left:14px;bottom:14px;background:var(--bg);}
+@media (max-width:900px){.venue{grid-template-columns:1fr}.venue__img{min-height:360px}.dl>div{grid-template-columns:1fr;gap:4px}}
+
+/* testimonials */
+.tm{background:var(--bg2)}
+.tm-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;gap:16px}
+.tm-track::-webkit-scrollbar{display:none}
+.q{flex:0 0 100%;scroll-snap-align:start;display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:clamp(20px,4vw,64px);align-items:end;padding:clamp(8px,1vw,16px) 0;margin:0}
+.q blockquote{margin:0;font:400 clamp(1.8rem,4.2vw,3.8rem)/1.08 var(--serif);letter-spacing:-.015em;text-wrap:balance}
+.q figcaption{display:grid;gap:14px}
+.q .av{width:140px;aspect-ratio:3/4;border-radius:999px 999px 20px 20px;overflow:hidden;background:var(--sage)}
+.q .av canvas{width:100%;height:100%;object-fit:cover;display:block}
+.q b{display:block;font:600 1.05rem var(--display)}
+.q span{color:var(--muted);font-size:.9rem}
+.tm-ctl{display:flex;align-items:center;justify-content:space-between;margin-top:36px;gap:16px;flex-wrap:wrap}
+.dots{display:flex;gap:8px}
+.dots button{width:10px;height:10px;border-radius:999px;background:var(--line);transition:width .4s var(--ease),background .3s}
+.dots button[aria-current="true"]{width:34px;background:var(--fg)}
+.dots button{position:relative}
+.dots button::after{content:"";position:absolute;inset:-14px -4px}
+@media (max-width:760px){.q{grid-template-columns:1fr}.q .av{width:96px}}
+
+/* final */
+.final{position:relative;overflow:hidden;padding-block:clamp(80px,12vw,180px)}
+.final__bg{position:absolute;inset:0}
+.final__bg canvas{width:100%;height:100%;object-fit:cover;display:block}
+.final__bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,9,.35),rgba(7,12,9,.78))}
+.final .wrap{position:relative;display:grid;gap:clamp(28px,4vw,48px);justify-items:start}
+.final .h2{font-size:clamp(2.6rem,10vw,9.6rem)}
+.final .lede{color:rgba(237,235,225,.85)}
+.final .info{border-color:rgba(237,235,225,.25);width:100%;animation:none;margin-top:clamp(12px,3vw,40px)}
+.final .info>div+div{border-color:rgba(237,235,225,.25)}
+.final .info .mono{color:rgba(237,235,225,.65)}
+
+/* footer */
+.foot{background:var(--ink);color:var(--paper);padding-block:clamp(56px,8vw,100px) 32px;--line:rgba(237,235,225,.16);--muted:#9AA79F}
+.foot__word{font:800 clamp(3.2rem,15vw,14rem)/.85 var(--display);letter-spacing:-.05em;text-transform:uppercase;margin:0 0 clamp(36px,5vw,64px);overflow-wrap:anywhere}
+.foot__grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.6fr;gap:clamp(24px,3vw,48px);padding-top:36px;border-top:1px solid var(--line)}
+.foot h4{margin:0 0 16px;color:var(--muted);font-weight:400}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.foot a,.foot .lnk{text-decoration:none;transition:color .3s;text-align:left}
+.foot a:hover,.foot .lnk:hover{color:var(--lime)}
+.foot p{margin:0;color:var(--muted);max-width:34ch}
+.nl{display:grid;gap:10px}
+.nl__row{display:flex;gap:8px;padding:6px;border:1px solid var(--line);border-radius:999px;transition:border-color .3s}
+.nl__row:focus-within{border-color:var(--lime)}
+.nl input{flex:1;min-width:0;background:none;border:0;color:inherit;font:inherit;padding:0 16px;outline:0}
+.nl input::placeholder{color:#7d8a82}
+.nl button{padding:.85em 1.4em;border-radius:999px;background:var(--lime);color:#0B1409;font-weight:600;transition:transform .3s var(--ease)}
+.nl button:hover{transform:scale(1.04)}
+.err{color:#ff9d8a;font-size:.88rem;min-height:1.3em;margin:0}
+.ok{color:var(--lime);font-size:.95rem;margin:0}
+.foot__base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted)}
+.foot__base ul{display:flex;gap:20px}
+@media (max-width:980px){.foot__grid{grid-template-columns:1fr 1fr}.foot__grid>:first-child,.foot__grid>:last-child{grid-column:1/-1}}
+
+/* modal */
+dialog{padding:0;border:0;background:var(--card);color:var(--fg);border-radius:32px;width:min(760px,calc(100% - 32px));max-height:min(88vh,860px);overflow:auto;opacity:0;transform:translateY(24px) scale(.97);transition:opacity .3s var(--ease),transform .4s var(--ease);box-shadow:0 40px 100px -30px rgba(0,0,0,.6)}
+dialog[open]{opacity:1;transform:none}
+dialog.closing{opacity:0;transform:translateY(16px) scale(.98)}
+dialog::backdrop{background:rgba(5,10,7,.62);backdrop-filter:blur(4px)}
+.m-x{position:sticky;top:14px;float:right;margin:14px 14px 0 0;z-index:3;width:46px;height:46px;border-radius:50%;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;transition:transform .4s var(--ease),background .3s}
+.m-x:hover{transform:rotate(90deg);background:var(--lime);color:#0B1409}
+.m-x svg{width:20px;height:20px}
+.m-img{aspect-ratio:16/8;background:var(--forest);position:relative;overflow:hidden;border-radius:32px 32px 0 0}
+.m-img canvas{width:100%;height:100%;object-fit:cover;display:block}
+.m-body{padding:clamp(24px,4vw,44px);display:grid;gap:18px}
+.m-body h2{margin:0;font:800 clamp(1.9rem,4vw,2.9rem)/1 var(--display);letter-spacing:-.03em;text-transform:uppercase}
+.m-body p{margin:0;color:var(--muted)}
+.m-body .topic{font:italic 400 1.5rem/1.2 var(--serif);color:var(--fg)}
+.form{display:grid;gap:14px}
+.fld{display:grid;gap:6px}
+.fld label{color:var(--muted)}
+.fld input,.fld textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:.9em 1.1em;width:100%;transition:border-color .3s}
+.fld input:focus,.fld textarea:focus{outline:2px solid var(--focus);outline-offset:2px;border-color:var(--fg)}
+.fld input[aria-invalid="true"]{border-color:#d4553b}
+.fld .err{color:#c0432b}
+.stepper{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px}
+.stepper button{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:1.3rem;transition:background .3s}
+.stepper button:hover{background:var(--bg2)}
+.stepper output{min-width:2ch;text-align:center;font:500 1rem var(--mono)}
+.sum{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-radius:20px;background:var(--bg2)}
+.sum b{font:800 1.8rem var(--display);letter-spacing:-.03em}
+.demo{padding:14px 18px;border-radius:18px;border:1px dashed var(--line);font-size:.9rem;color:var(--muted)}
+.done{display:grid;gap:14px;justify-items:start}
+.done .tick{width:56px;height:56px;border-radius:50%;background:var(--lime);color:#0B1409;display:grid;place-items:center}
+.done .tick svg{width:26px;height:26px;stroke-width:2.6}
+
+.ibox{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:rgba(237,235,225,.92);color:#0F1A14;flex:none}
+.ibox svg{width:21px;height:21px}
+.ibox--lime{background:var(--lime);color:#0B1409}
+.info .mono,.dl dt{display:flex;align-items:center;gap:8px}
+.info .mono svg,.dl dt svg{width:15px;height:15px;flex:none}
+.pill svg.ic{width:1.2em;height:1.2em;flex:none}
+.tk__icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line)}
+.tk__icon svg{width:24px;height:24px}
+.tk--feat .tk__icon{border-color:rgba(237,235,225,.3);color:var(--lime)}
+.foot li .ic,.foot .mono .ic{margin-right:10px;vertical-align:-3px;width:1.1em;height:1.1em}
+.foot li{display:flex;align-items:center}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .rv.pre{transform:none}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-l" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M10 2v7.5L4.5 19a2 2 0 0 0 1.7 3h11.6a2 2 0 0 0 1.7-3L14 9.5V2"/><path d="M8.5 2h7M7 16h10"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol>
+  <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2"/></symbol>
+  <symbol id="i-watch" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><path d="M12 10v2l1 1M16.1 6.1 15.5 2h-7l-.6 4.1M7.9 17.9 8.5 22h7l.6-4.1"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z"/><path d="M19 15v4M17 17h4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2"/></symbol>
+  <symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 18h18M4 18 3 7l5 4 4-6 4 6 5-4-1 11"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4z"/></symbol>
+  <symbol id="i-train" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M9 21l2-4M15 21l-2-4M9 14h.01M15 14h.01"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 24 24"><path d="M2 18V6M2 14h20v4M22 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol>
+  <symbol id="i-linkedin" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></symbol>
+  <symbol id="i-youtube" viewBox="0 0 24 24"><path d="M2.5 17a24.1 24.1 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.6 49.6 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.1 24.1 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.6 49.6 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></symbol>
+  <symbol id="logo" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 2v28" stroke="currentColor" stroke-width="2"/><path d="M16 8a8 8 0 0 1 0 16" fill="currentColor"/></symbol>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="nav__bar">
+    <a class="brand" href="#top" aria-label="Meridian, back to top"><svg aria-hidden="true"><use href="#logo"/></svg>Meridian</a>
+    <nav aria-label="Primary">
+      <ul class="nav__links" id="navLinks">
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#speakers">Speakers</a></li>
+        <li><a href="#zones">Wellness Zones</a></li>
+        <li><a href="#schedule">Schedule</a></li>
+        <li><a href="#exhibitors">Exhibitors</a></li>
+        <li><a href="#tickets">Tickets</a></li>
+        <li><a href="#venue">Venue</a></li>
+      </ul>
+    </nav>
+    <a class="nav__cta nav__cta--d" href="#tickets">Get Tickets <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    <button class="pill pill--solid menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mmenu">Menu</button>
+  </div>
+</header>
+
+<div class="mmenu" id="mmenu" aria-label="Menu">
+  <ul>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#speakers">Speakers</a></li>
+    <li><a href="#zones">Wellness Zones</a></li>
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#exhibitors">Exhibitors</a></li>
+    <li><a href="#tickets">Tickets</a></li>
+    <li><a href="#venue">Venue</a></li>
+  </ul>
+  <a class="btn btn--lime" href="#tickets" style="justify-self:start;font-family:var(--sans);text-transform:none;font-size:1rem;letter-spacing:0;border:0;line-height:1.6">Get Tickets <span class="arr"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>
+</div>
+
+<main id="main">
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero__meta">
+      <span class="pill pill--solid"><span class="dot"></span>12–14 Mar 2027</span>
+      <span class="pill">Venue to be announced</span>
+      <span class="pill">Sample dates</span>
+    </div>
+    <h1 class="h1" aria-label="The future of human potential.">
+      <span class="ln"><span>The future of</span></span>
+      <span class="ln"><span>Human <span class="serif">Potential.</span></span></span>
+    </h1>
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <p class="lede">Where longevity science, wellness innovation, and human performance converge to redefine the way we live.</p>
+        <div class="hero__cta">
+          <a class="btn btn--lime" href="#experience">Explore the Experience <span class="arr"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>
+          <a class="btn btn--line" href="#tickets">Get Tickets <span class="arr"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>
+        </div>
+        <a class="scrollcue mono" href="#experience"><i aria-hidden="true"></i>Scroll</a>
+      </div>
+      <div class="hero__vis">
+        <div class="panel" data-par="0.04">
+          <canvas data-art="dawn" data-pal="forest" data-seed="7" data-w="1000" data-h="800" role="img" aria-label="Generated artwork: layered green hills under a glowing sun"></canvas>
+        </div>
+        <div class="arch" data-par="-0.05"><canvas data-art="arch" data-pal="sage" data-seed="3" data-w="480" data-h="640" role="img" aria-label="Generated artwork: nested stone arches"></canvas></div>
+        <div class="orbtag" data-par="0.07"><canvas data-art="orb" data-pal="champagne" data-seed="11" data-w="300" data-h="300" role="img" aria-label="Generated artwork: a glowing orb"></canvas></div>
+        <span class="pill float f1"><span class="dot"></span>Zone 04 · Light &amp; Oxygen</span>
+        <span class="pill float f2">Cold plunge · 3°C</span>
+        <span class="pill float f3">HRV 68 ms</span>
+      </div>
+    </div>
+    <div class="info">
+      <div><span class="mono"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg>Dates</span><b>12–14 March 2027</b></div>
+      <div><span class="mono"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>Venue</span><b>Venue name, City</b></div>
+      <div><span class="mono"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>Doors</span><b>09:00 – 18:00 daily</b></div>
+      <div><span class="mono"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg>Format</span><b>Talks · Labs · Zones</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="experience">
+  <div class="wrap">
+    <div class="eyebrow mono" style="margin-bottom:28px">The experience</div>
+    <div class="intro__top">
+      <h2 class="h2 rv">Better health.<br>Longer lives.<br><span class="serif">New</span> possibilities.</h2>
+      <p class="lede rv">Three days, ten zones, one floor. Meet the researchers, clinicians and builders working on how long and how well people live, then try the tools yourself.</p>
+    </div>
+    <div class="intro__img rv">
+      <canvas data-art="strata" data-pal="mist" data-seed="21" data-w="1400" data-h="600" role="img" aria-label="Generated artwork: soft horizontal bands of sage and mist"></canvas>
+      <div class="pills"><span class="pill">12–14 Mar 2027</span><span class="pill">Venue name, City</span><span class="pill">Hall A · Hall B</span></div>
+    </div>
+    <div class="stats rv" role="list">
+      <div role="listitem"><b>3</b><span>Days on the floor</span></div>
+      <div role="listitem"><b>10</b><span>Experience zones</span></div>
+      <div role="listitem"><b>00+</b><span>Speakers (edit this figure)</span></div>
+      <div role="listitem"><b>00+</b><span>Exhibitors (edit this figure)</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="speakers" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec__head">
+      <div class="eyebrow mono">Featured speakers</div>
+      <h2 class="h2 rv">The people <span class="serif">behind</span> the science.</h2>
+      <p class="note">Sample profiles. Names, titles and topics are placeholders; edit the SPEAKERS array to publish real speakers.</p>
+    </div>
+    <div class="spk-grid" id="spkGrid"></div>
+  </div>
+</section>
+
+<section class="sec zones" id="zones">
+  <div class="wrap">
+    <div class="sec__head">
+      <div class="eyebrow mono">Wellness zones</div>
+      <h2 class="h2 rv">Ten zones. <span class="serif">One</span> floor.</h2>
+      <p class="note">Walk the floor like a destination. Filter by theme, then scroll sideways.</p>
+    </div>
+    <div class="zone-tools">
+      <div class="pills" id="zoneFilters" role="group" aria-label="Filter zones by theme"></div>
+      <div class="round-btns">
+        <button class="rbtn" id="zPrev" aria-label="Scroll zones left"><svg class="ic" aria-hidden="true"><use href="#i-l"/></svg></button>
+        <button class="rbtn" id="zNext" aria-label="Scroll zones right"><svg class="ic" aria-hidden="true"><use href="#i-r"/></svg></button>
+      </div>
+    </div>
+    <div class="track" id="zoneTrack" tabindex="-1"></div>
+  </div>
+</section>
+
+<section class="dark immersive" id="story" aria-labelledby="storyH">
+  <div class="immersive__media" id="storyMedia" aria-hidden="true">
+    <canvas data-art="rings" data-pal="ink" data-seed="5" data-w="1600" data-h="1000" id="storyCv"></canvas>
+  </div>
+  <div class="wrap">
+    <span class="pill" style="width:max-content">After dark · Day 02</span>
+    <h2 class="h2" id="storyH">Your next decade<br>starts with<br>what you <span class="serif">discover.</span></h2>
+    <div class="immersive__foot">
+      <p class="lede">Test, measure and try what the research is pointing at. Walk out with a plan built around your own numbers.</p>
+      <a class="btn btn--lime" href="#schedule">See the schedule <span class="arr"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="schedule">
+  <div class="wrap">
+    <div class="sec__head">
+      <div class="eyebrow mono">Schedule</div>
+      <h2 class="h2 rv">Plan your <span class="serif">three</span> days.</h2>
+      <p class="note">Sample schedule. Times, rooms and presenters are placeholders; edit the SESSIONS array.</p>
+    </div>
+    <div class="sched-tools">
+      <div class="row">
+        <div class="pills days" id="dayTabs" role="group" aria-label="Choose a day"></div>
+        <span class="mono" id="schedCount" style="color:var(--muted)" aria-live="polite"></span>
+      </div>
+      <div class="pills" id="typeTabs" role="group" aria-label="Filter by session type"></div>
+    </div>
+    <div id="sessList" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="sec exh" id="exhibitors">
+  <div class="wrap">
+    <div class="sec__head">
+      <div class="eyebrow mono">Exhibitors &amp; partners</div>
+      <h2 class="h2 rv">Brands <span class="serif">building</span> what's next.</h2>
+      <p class="note">Placeholder brands for layout only. None are confirmed exhibitors or partners.</p>
+    </div>
+    <div class="pills" id="exFilters" role="group" aria-label="Filter exhibitors" style="margin-bottom:24px"></div>
+    <div class="exh-grid" id="exGrid"></div>
+    <div class="exh-cta">
+      <p class="lede" style="max-width:40ch">Run a brand, clinic or practice? Take a stand on the floor.</p>
+      <button class="btn btn--ink" data-enq="exhibit">Become an exhibitor <span class="arr"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span></button>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="tickets">
+  <div class="wrap">
+    <div class="sec__head">
+      <div class="eyebrow mono">Tickets</div>
+      <h2 class="h2 rv">Choose your <span class="serif">access.</span></h2>
+      <p class="note">Placeholder prices. Checkout is a demo: no payment is taken and nothing is stored.</p>
+    </div>
+    <div class="tix" id="tixGrid"></div>
+    <div class="tixbar" id="tixBar"></div>
+  </div>
+</section>
+
+<section class="sec" id="venue" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec__head">
+      <div class="eyebrow mono">Venue &amp; location</div>
+      <h2 class="h2 rv">A hall built <span class="serif">for light.</span></h2>
+      <p class="note">Venue details are placeholders. Replace them once the venue is confirmed.</p>
+    </div>
+    <div class="venue">
+      <div class="venue__img">
+        <canvas data-art="arch" data-pal="champagne" data-seed="14" data-w="900" data-h="1000" role="img" aria-label="Generated artwork: a sequence of warm stone arches"></canvas>
+        <div class="pills"><span class="pill">Hall A</span><span class="pill">Hall B</span><span class="pill">Garden terrace</span></div>
+      </div>
+      <div class="venue__info">
+        <dl class="dl">
+          <div><dt class="mono"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>Venue</dt><dd>Venue name, Street address, City, Postcode</dd></div>
+          <div><dt class="mono"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg>Dates</dt><dd>Friday 12 to Sunday 14 March 2027</dd></div>
+          <div><dt class="mono"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>Hours</dt><dd>09:00 to 18:00 daily, evening sessions on Saturday</dd></div>
+          <div><dt class="mono"><svg class="ic" aria-hidden="true"><use href="#i-train"/></svg>Travel</dt><dd>Nearest station, airport and parking details go here.</dd></div>
+          <div><dt class="mono"><svg class="ic" aria-hidden="true"><use href="#i-bed"/></svg>Stay</dt><dd>Partner hotel rates and booking codes go here.</dd></div>
+        </dl>
+        <div class="map" role="img" aria-label="Map placeholder">
+          <svg viewBox="0 0 640 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <g stroke="currentColor" stroke-opacity=".14" fill="none">
+              <path d="M0 80h640M0 160h640M0 240h640M120 0v320M260 0v320M400 0v320M540 0v320"/>
+              <path d="M-10 300C120 220 220 260 330 170S520 60 660 20" stroke-opacity=".35" stroke-width="3"/>
+              <path d="M60 0C90 100 200 150 250 320" stroke-opacity=".25" stroke-width="2"/>
+            </g>
+            <circle cx="330" cy="170" r="26" fill="#C6F23A" fill-opacity=".35"/>
+            <circle cx="330" cy="170" r="9" fill="#12301F"/>
+          </svg>
+          <span class="pill">Map embed goes here</span>
+        </div>
+        <div class="hero__cta" style="animation:none">
+          <a class="btn btn--ink" href="https://www.google.com/maps" target="_blank" rel="noopener">Get directions <span class="arr"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>
+          <button class="btn btn--line" data-enq="stay">Accommodation <span class="arr"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec tm" id="voices">
+  <div class="wrap">
+    <div class="sec__head">
+      <div class="eyebrow mono">Voices</div>
+      <h2 class="h2 rv">What people <span class="serif">take</span> home.</h2>
+      <p class="note">Sample quotes for layout. Replace with verified testimonials before launch.</p>
+    </div>
+    <div class="tm-track" id="tmTrack" tabindex="0" aria-label="Testimonials"></div>
+    <div class="tm-ctl">
+      <div class="dots" id="tmDots"></div>
+      <div class="round-btns">
+        <button class="rbtn" id="tPrev" aria-label="Previous testimonial"><svg class="ic" aria-hidden="true"><use href="#i-l"/></svg></button>
+        <button class="rbtn" id="tNext" aria-label="Next testimonial"><svg class="ic" aria-hidden="true"><use href="#i-r"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dark final" id="join" aria-labelledby="finalH">
+  <div class="final__bg" aria-hidden="true"><canvas data-art="dawn" data-pal="dusk" data-seed="33" data-w="1600" data-h="1000"></canvas></div>
+  <div class="wrap">
+    <h2 class="h2" id="finalH">Invest in your<br><span class="serif">future</span> self.</h2>
+    <p class="lede">Discover the people, ideas, and experiences shaping the next era of human wellness.</p>
+    <div class="hero__cta" style="animation:none">
+      <a class="btn btn--lime" href="#tickets">Get Tickets <span class="arr"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span></a>
+      <button class="btn btn--line" id="updatesBtn">Get event updates <span class="arr"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span></button>
+    </div>
+    <div class="info">
+      <div><span class="mono"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg>Dates</span><b>12–14 March 2027</b></div>
+      <div><span class="mono"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>Venue</span><b>Venue name, City</b></div>
+      <div><span class="mono"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>Doors</span><b>09:00 – 18:00</b></div>
+      <div><span class="mono"><svg class="ic" aria-hidden="true"><use href="#i-ticket"/></svg>Tickets</span><b>From $59 (sample)</b></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot" id="footer">
+  <div class="wrap">
+    <p class="foot__word" aria-hidden="true">Meridian</p>
+    <div class="foot__grid">
+      <div>
+        <p>A three-day expo on longevity, wellness and human performance. Sample brand and content, ready for your own.</p>
+      </div>
+      <div>
+        <h4 class="mono">Explore</h4>
+        <ul>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#speakers">Speakers</a></li>
+          <li><a href="#zones">Wellness zones</a></li>
+          <li><a href="#schedule">Schedule</a></li>
+          <li><a href="#tickets">Tickets</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="mono">Follow &amp; contact</h4>
+        <ul>
+          <li><a href="https://www.instagram.com" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="#i-instagram"/></svg>Instagram</a></li>
+          <li><a href="https://www.linkedin.com" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="#i-linkedin"/></svg>LinkedIn</a></li>
+          <li><a href="https://www.youtube.com" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="#i-youtube"/></svg>YouTube</a></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg><span>hello@your-domain.example</span></li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg><span>+00 000 000 0000</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="mono">Event updates</h4>
+        <form class="nl" id="nlForm" novalidate>
+          <label class="vh" for="nlEmail">Email address</label>
+          <div class="nl__row"><input id="nlEmail" type="email" placeholder="you@example.com" autocomplete="email" aria-describedby="nlMsg"><button type="submit">Subscribe</button></div>
+          <p class="err" id="nlMsg" role="status"></p>
+        </form>
+      </div>
+    </div>
+    <div class="foot__base mono">
+      <span>© 2027 Meridian Expo (sample). All rights reserved.</span>
+      <ul>
+        <li><button class="lnk" data-policy="Privacy policy">Privacy policy</button></li>
+        <li><button class="lnk" data-policy="Terms">Terms</button></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<dialog id="modal" aria-labelledby="mTitle">
+  <button class="m-x" id="mClose" aria-label="Close dialog"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+  <div id="mBody"></div>
+</dialog>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+function ic(n){return '<svg class="ic" aria-hidden="true"><use href="#i-'+n+'"/></svg>'}
+function arr(){return '<span class="arr">'+ic("arrow")+'</span>'}
+
+/* ============ EDITABLE DATA ============ */
+var SPEAKERS=[
+ {name:"Dr. Naledi Okafor",role:"Healthspan researcher",cat:"Longevity Science",topic:"The Healthspan Decade",bio:"Sample profile. Researches the biology of ageing and how to measure it in everyday life.",kind:"rings",pal:"forest",seed:4,cls:"a"},
+ {name:"Marcus Hale",role:"Recovery coach",cat:"Recovery",topic:"Cold exposure, done well",bio:"Sample profile. Teaches practical heat and cold protocols for athletes and beginners.",kind:"dawn",pal:"dusk",seed:9,cls:"b"},
+ {name:"Dr. Sofia Lindqvist",role:"Clinical diagnostics lead",cat:"Diagnostics",topic:"Reading your own biomarkers",bio:"Sample profile. Explains which blood and body measures are worth tracking over time.",kind:"grid",pal:"ink",seed:12,cls:"c"},
+ {name:"Ren Takahashi",role:"Wearable technology designer",cat:"Technology",topic:"What the data can and cannot tell you",bio:"Sample profile. Designs sensors and the software that turns signals into advice.",kind:"orb",pal:"mist",seed:15,cls:"d"},
+ {name:"Dr. Priya Raman",role:"Nutrition scientist",cat:"Nutrition",topic:"Eating for metabolic flexibility",bio:"Sample profile. Studies how meal timing and composition shape energy and recovery.",kind:"waves",pal:"olive",seed:18,cls:"e"},
+ {name:"Tomás Beltrán",role:"Breathwork teacher",cat:"Mindfulness",topic:"Breath and the nervous system",bio:"Sample profile. Leads guided sessions that connect breathing patterns to stress and sleep.",kind:"strata",pal:"sage",seed:23,cls:"f"},
+ {name:"Dr. Elara Whitfield",role:"Sleep medicine physician",cat:"Recovery",topic:"Sleep architecture and recovery",bio:"Sample profile. Works with patients and teams on sleep quality and daytime performance.",kind:"arch",pal:"champagne",seed:27,cls:"g"},
+ {name:"Jonah Reyes",role:"Strength and conditioning coach",cat:"Performance",topic:"Strength training for the long game",bio:"Sample profile. Builds programmes that keep people strong and mobile for decades.",kind:"waves",pal:"forest",seed:31,cls:"h"}
+];
+var ZONES=[
+ {n:"Longevity Science",cat:"Science",kind:"rings",pal:"forest",seed:41,t:"Open labs and talks on the biology of ageing, explained in plain terms."},
+ {n:"Biohacking & Diagnostics",cat:"Technology",kind:"grid",pal:"ink",seed:42,t:"Body scans, blood panels and metabolic tests with a specialist to read the results."},
+ {n:"Recovery & Regeneration",cat:"Recovery",kind:"strata",pal:"sage",seed:43,t:"Compression, massage and guided rest. Slow down between sessions."},
+ {n:"Sauna & Cold Therapy",cat:"Recovery",kind:"dawn",pal:"dusk",seed:44,t:"Heat and cold circuits, hosted by trained facilitators."},
+ {n:"Functional Nutrition",cat:"Nutrition",kind:"waves",pal:"olive",seed:45,t:"Cooking demos and tastings built around energy and metabolic health."},
+ {n:"Fitness & Performance",cat:"Movement",kind:"waves",pal:"champagne",seed:46,t:"Strength, mobility and conditioning sessions for every level."},
+ {n:"Mindfulness & Meditation",cat:"Mind",kind:"orb",pal:"mist",seed:47,t:"A quiet room for guided sits, breathwork and sound."},
+ {n:"Wearable Technology",cat:"Technology",kind:"grid",pal:"forest",seed:48,t:"Rings, bands and patches side by side. Try them and compare."},
+ {n:"Light & Oxygen Experiences",cat:"Science",kind:"orb",pal:"ink",seed:49,t:"Red light, hyperoxic and altitude sessions in supervised pods."},
+ {n:"Wellness Workshops",cat:"Mind",kind:"arch",pal:"champagne",seed:50,t:"Small-group, hands-on sessions that end with something you can keep doing."}
+];
+var ZICONS=["flask","activity","moon","flame","leaf","dumbbell","wind","watch","sun","sparkles"];
+var TICON={Talk:"mic",Workshop:"sparkles",Demonstration:"play",Fitness:"dumbbell"};
+var DAYS=[{id:1,label:"Day 1",date:"Fri 12 Mar"},{id:2,label:"Day 2",date:"Sat 13 Mar"},{id:3,label:"Day 3",date:"Sun 14 Mar"}];
+var TYPES=["Talk","Workshop","Demonstration","Fitness"];
+var SESSIONS=[
+ {day:1,start:"09:30",end:"10:30",title:"Opening keynote: The Healthspan Decade",who:"Dr. Naledi Okafor",room:"Main Stage",type:"Talk",desc:"Where the science of living longer and better stands today, and what to watch next."},
+ {day:1,start:"11:00",end:"12:00",title:"Cold exposure protocols, hands-on",who:"Marcus Hale",room:"Recovery Hall",type:"Workshop",desc:"Learn safe entry, timing and breathing, then try it with a facilitator beside you."},
+ {day:1,start:"13:00",end:"13:45",title:"Reading your own biomarkers",who:"Dr. Sofia Lindqvist",room:"Lab Theatre",type:"Demonstration",desc:"A live walk-through of a sample panel and what each marker can and cannot say."},
+ {day:1,start:"15:30",end:"16:30",title:"Strength training for the long game",who:"Jonah Reyes",room:"Performance Floor",type:"Fitness",desc:"A coached session on the lifts and patterns that keep you capable with age."},
+ {day:2,start:"09:00",end:"09:45",title:"Morning mobility flow",who:"Jonah Reyes",room:"Performance Floor",type:"Fitness",desc:"Gentle, full-body mobility to start the day. All levels welcome."},
+ {day:2,start:"10:30",end:"11:30",title:"Sleep architecture and recovery",who:"Dr. Elara Whitfield",room:"Main Stage",type:"Talk",desc:"How sleep stages work, why they matter, and the habits that protect them."},
+ {day:2,start:"12:30",end:"13:15",title:"Wearables: what the data can and cannot tell you",who:"Ren Takahashi",room:"Lab Theatre",type:"Demonstration",desc:"Side-by-side readings from common devices, with an honest look at accuracy."},
+ {day:2,start:"14:30",end:"15:30",title:"Eating for metabolic flexibility",who:"Dr. Priya Raman",room:"Kitchen Studio",type:"Workshop",desc:"Cook and taste three meals designed around steady energy."},
+ {day:2,start:"16:30",end:"17:30",title:"Panel: Longevity science, evidence and hype",who:"Speakers to be announced",room:"Main Stage",type:"Talk",desc:"Researchers and clinicians discuss which claims hold up and which do not."},
+ {day:3,start:"09:30",end:"10:30",title:"Breathwork and the nervous system",who:"Tomás Beltrán",room:"Stillness Room",type:"Workshop",desc:"Three breathing practices for calm, focus and sleep, taught step by step."},
+ {day:3,start:"11:30",end:"12:30",title:"Zone 2 training session",who:"Marcus Hale",room:"Performance Floor",type:"Fitness",desc:"Steady aerobic work explained and practised, with heart-rate guidance."},
+ {day:3,start:"14:00",end:"15:00",title:"Closing keynote: Designing a longer life",who:"Dr. Naledi Okafor",room:"Main Stage",type:"Talk",desc:"Turning three days of ideas into a plan you can start on Monday."}
+];
+var EXHIBITORS=[
+ {n:"Nordlys Labs",cat:"Diagnostics",m:"m1",booth:"A-01",d:"Placeholder exhibitor. At-home and in-clinic testing kits with clear reports."},
+ {n:"Halcyon Recovery",cat:"Recovery",m:"m2",booth:"A-04",d:"Placeholder exhibitor. Recovery tools and spaces for athletes and everyone else."},
+ {n:"Fieldstone Nutrition",cat:"Nutrition",m:"m4",booth:"B-02",d:"Placeholder exhibitor. Whole-food products and meal planning."},
+ {n:"Pulse & Co",cat:"Wearables",m:"m3",booth:"B-05",d:"Placeholder exhibitor. Wearable sensors and the apps that read them."},
+ {n:"Arbor Clinic",cat:"Practitioners",m:"m2",booth:"C-01",d:"Placeholder exhibitor. A multidisciplinary practice for preventive care."},
+ {n:"Lumen Oxygen",cat:"Recovery",m:"m1",booth:"A-07",d:"Placeholder exhibitor. Light and oxygen sessions in supervised pods."},
+ {n:"Kestrel Bio",cat:"Diagnostics",m:"m3",booth:"A-09",d:"Placeholder exhibitor. Lab-grade biomarker panels with coaching."},
+ {n:"Oakhouse Sauna",cat:"Recovery",m:"m4",booth:"C-04",d:"Placeholder exhibitor. Portable and fixed sauna builds."},
+ {n:"Tidewater Foods",cat:"Nutrition",m:"m2",booth:"B-08",d:"Placeholder exhibitor. Fermented foods and functional drinks."},
+ {n:"Vantage Band",cat:"Wearables",m:"m1",booth:"B-10",d:"Placeholder exhibitor. Training and sleep tracking on the wrist."},
+ {n:"Solace Practice",cat:"Practitioners",m:"m4",booth:"C-07",d:"Placeholder exhibitor. Breathwork, bodywork and mindfulness teachers."},
+ {n:"Helix Panel",cat:"Diagnostics",m:"m3",booth:"A-12",d:"Placeholder exhibitor. Genetic and metabolic testing with counselling."}
+];
+var EX_CATS=["Diagnostics","Recovery","Nutrition","Wearables","Practitioners"];
+var TICKETS=[
+ {id:"ga",icon:"ticket",name:"General Admission",price:59,feat:false,items:["Essential expo access","Selected experiences","Exhibitor floor access"]},
+ {id:"all",icon:"badge",name:"All Access",price:149,feat:true,items:["Expanded event access","Educational sessions","Selected workshops and activities","All three days"]},
+ {id:"vip",icon:"crown",name:"VIP Experience",price:399,feat:false,items:["Premium access","Priority seating where applicable","Additional exclusive experiences","Lounge and recovery suite"]}
+];
+var QUOTES=[
+ {q:"I came for the talks and stayed for the testing floor. I left with one habit to change and a reason to do it.",n:"Name Surname",r:"Verified role, Company",seed:61},
+ {q:"The best part was how little hype there was. Everyone could show their evidence.",n:"Name Surname",r:"Verified role, Company",seed:62},
+ {q:"Three days, and the schedule never felt rushed. I tried more than I planned to.",n:"Name Surname",r:"Verified role, Company",seed:63},
+ {q:"I took my whole team. We still refer to the notes we made in the diagnostics zone.",n:"Name Surname",r:"Verified role, Company",seed:64}
+];
+
+/* ============ GENERATIVE ART ============ */
+var PALS={
+ forest:["#0E2417","#1F4B32","#5E7B58","#C6F23A"],
+ sage:["#D3DCCB","#93A98E","#5B6F51","#F4F2EA"],
+ champagne:["#EFE4C8","#BDA46C","#7C6B3F","#FFF8E6"],
+ ink:["#060B08","#15241A","#2E4A38","#C6F23A"],
+ olive:["#262B14","#69713F","#A9AE70","#EBE4BA"],
+ mist:["#E1E6DD","#AEBCAE","#476650","#FFFFFF"],
+ dusk:["#101811","#44563A","#C9B58A","#F6EAC9"]
+};
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hexA(h,a){var n=parseInt(h.slice(1),16);return "rgba("+(n>>16&255)+","+(n>>8&255)+","+(n&255)+","+a+")"}
+function mix(a,b,t){var A=parseInt(a.slice(1),16),B=parseInt(b.slice(1),16);var r=Math.round((A>>16&255)*(1-t)+(B>>16&255)*t),g=Math.round((A>>8&255)*(1-t)+(B>>8&255)*t),l=Math.round((A&255)*(1-t)+(B&255)*t);return "#"+((1<<24)+(r<<16)+(g<<8)+l).toString(16).slice(1)}
+function mkNoise(r){var t=[],i;for(i=0;i<512;i++)t.push(r());function s(x){var i=Math.floor(x),f=x-i;f=f*f*(3-2*f);return t[i&511]*(1-f)+t[(i+1)&511]*f}
+ return function(x,oct){var v=0,a=.5,fr=1,n=oct||4,tot=0,k;for(k=0;k<n;k++){v+=a*s(x*fr+k*17.3+64);tot+=a;a*=.5;fr*=2}return v/tot}}
+var grainTile=null;
+function grain(){if(grainTile)return grainTile;var t=document.createElement("canvas");t.width=t.height=200;var x=t.getContext("2d"),d=x.createImageData(200,200),i,v;for(i=0;i<d.data.length;i+=4){v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255}x.putImageData(d,0,0);grainTile=t;return t}
+function finish(c,W,H){
+ var v=c.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.78);
+ v.addColorStop(0,"rgba(0,0,0,0)");v.addColorStop(1,"rgba(0,0,0,.42)");c.fillStyle=v;c.fillRect(0,0,W,H);
+ c.save();c.globalCompositeOperation="overlay";c.globalAlpha=.16;c.fillStyle=c.createPattern(grain(),"repeat");c.fillRect(0,0,W,H);c.restore();
+}
+function skyGlow(c,W,H,x,y,rad,col,a){var g=c.createRadialGradient(x,y,0,x,y,rad);g.addColorStop(0,hexA(col,a));g.addColorStop(.3,hexA(col,a*.4));g.addColorStop(1,hexA(col,0));c.fillStyle=g;c.fillRect(0,0,W,H)}
+function motes(c,W,H,r,p,cx,cy,spread,n){c.save();c.globalCompositeOperation="lighter";for(var i=0;i<n;i++){var x=cx+(r()-.5)*spread*2,y=cy+(r()-.5)*spread*1.4,s=.8+r()*2.6;c.fillStyle=hexA(p[3],.15+r()*.5);c.beginPath();c.arc(x,y,s,0,7);c.fill()}c.restore()}
+
+/* misty mountain ridges with sun, rays and pines */
+function scapeRidges(c,W,H,p,r){
+ var n=mkNoise(r),haze=mix(p[2],p[3],.55),L=7,i,k,x,j;
+ var g=c.createLinearGradient(0,0,0,H*.62);g.addColorStop(0,p[0]);g.addColorStop(.55,mix(p[1],p[3],.18));g.addColorStop(1,mix(p[2],p[3],.6));
+ c.fillStyle=g;c.fillRect(0,0,W,H);
+ var sx=W*(.26+.48*r()),sy=H*(.34+.06*r());
+ c.save();c.globalCompositeOperation="lighter";
+ skyGlow(c,W,H,sx,sy,Math.max(W,H)*.75,p[3],.55);
+ for(i=0;i<16;i++){var a=-Math.PI*(.05+.9*r()),w=.025+.05*r(),len=Math.max(W,H)*1.4;
+  var rg=c.createRadialGradient(sx,sy,0,sx,sy,len);rg.addColorStop(0,hexA(p[3],.16));rg.addColorStop(1,hexA(p[3],0));
+  c.fillStyle=rg;c.beginPath();c.moveTo(sx,sy);c.lineTo(sx+Math.cos(a-w)*len,sy+Math.sin(a-w)*len);c.lineTo(sx+Math.cos(a+w)*len,sy+Math.sin(a+w)*len);c.closePath();c.fill()}
+ var R=Math.min(W,H)*.075,sg=c.createRadialGradient(sx,sy,0,sx,sy,R*1.6);
+ sg.addColorStop(0,hexA("#FFFFFF",.95));sg.addColorStop(.45,hexA(p[3],.9));sg.addColorStop(1,hexA(p[3],0));
+ c.fillStyle=sg;c.beginPath();c.arc(sx,sy,R*1.6,0,7);c.fill();
+ c.restore();
+ for(k=0;k<L;k++){
+  var t=k/(L-1),base=H*(.5+.07*k+.03*t),amp=H*(.2-.1*t)*(.8+.4*r()),fr=1.6+k*.5,off=r()*50;
+  c.beginPath();c.moveTo(0,H);
+  for(x=0;x<=W;x+=6)c.lineTo(x,base-amp*n(x/W*fr+off,5));
+  c.lineTo(W,H);c.closePath();c.fillStyle=mix(haze,p[0],Math.pow(t,.85)*.94);c.fill();
+  var fg=c.createLinearGradient(0,base-amp*.2,0,base+H*.1);fg.addColorStop(0,hexA(haze,0));fg.addColorStop(1,hexA(haze,.38*(1-t)+.04));
+  c.fillStyle=fg;c.fillRect(0,base-amp*.2,W,H*.3);
+  if(k>=L-2){
+   var d=k-(L-2),tc=mix(p[0],"#000000",.3+.2*d);c.fillStyle=tc;
+   for(x=0;x<=W;x+=Math.max(6,W/70)*(.7+.6*r())){
+    var yy=base-amp*n(x/W*fr+off,5),th=H*(.04+.05*r())*(1+d*.6),tw=th*.38;
+    for(j=0;j<4;j++){var hh=th*(1-j*.2),ww=tw*(1-j*.18),yb=yy-j*th*.2;c.beginPath();c.moveTo(x-ww,yb);c.lineTo(x,yb-hh*.55);c.lineTo(x+ww,yb);c.closePath();c.fill()}
+   }
+  }
+ }
+ motes(c,W,H,r,p,sx,sy+H*.15,W*.4,60);
+}
+
+/* receding stone arcade lit from the far end */
+function scapeCorridor(c,W,H,p,r){
+ var N=7,i;
+ var bg=c.createRadialGradient(W/2,H*.52,0,W/2,H*.52,W*.75);bg.addColorStop(0,p[3]);bg.addColorStop(.35,mix(p[3],p[2],.55));bg.addColorStop(1,p[0]);
+ c.fillStyle=bg;c.fillRect(0,0,W,H);
+ var hy=H*.56,fl=c.createLinearGradient(0,hy,0,H);fl.addColorStop(0,mix(p[2],p[3],.5));fl.addColorStop(1,p[0]);
+ c.fillStyle=fl;c.fillRect(0,hy,W,H-hy);
+ c.save();c.globalCompositeOperation="lighter";
+ var st=c.createLinearGradient(0,hy,0,H);st.addColorStop(0,hexA(p[3],.5));st.addColorStop(1,hexA(p[3],0));c.fillStyle=st;
+ c.beginPath();c.moveTo(W/2-W*.06,hy);c.lineTo(W/2+W*.06,hy);c.lineTo(W/2+W*.3,H);c.lineTo(W/2-W*.3,H);c.closePath();c.fill();c.restore();
+ for(i=0;i<N;i++){
+  var t=(i+1)/N,wi=W*(.15+.7*Math.pow(t,1.6)),x0=(W-wi)/2,x1=x0+wi,yf=i===N-1?H+4:H*(.56+.44*Math.pow(t,1.5)),yt=yf-wi*1.5,ar=wi/2;
+  var col=mix(mix(p[2],p[3],.35),p[0],Math.pow(t,.9));
+  var wg=c.createLinearGradient(0,0,W,0);wg.addColorStop(0,mix(col,p[0],.6));wg.addColorStop(.5,col);wg.addColorStop(1,mix(col,p[0],.6));
+  c.beginPath();c.rect(0,0,W,yf);c.moveTo(x0,yf);c.lineTo(x0,yt+ar);c.arc(W/2,yt+ar,ar,Math.PI,0);c.lineTo(x1,yf);c.closePath();
+  c.fillStyle=wg;c.fill("evenodd");
+  c.beginPath();c.moveTo(x0,yf);c.lineTo(x0,yt+ar);c.arc(W/2,yt+ar,ar,Math.PI,0);c.lineTo(x1,yf);
+  c.strokeStyle=hexA(p[3],.38*(1-t*.5));c.lineWidth=2+t*3;c.stroke();
+ }
+ c.save();c.globalCompositeOperation="lighter";skyGlow(c,W,H,W/2,H*.52,W*.5,p[3],.3);c.restore();
+ motes(c,W,H,r,p,W/2,H*.5,W*.3,50);
+}
+
+/* soft translucent cells and bokeh */
+function scapeCells(c,W,H,p,r){
+ var i,g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,p[0]);g.addColorStop(1,mix(p[0],p[1],.8));c.fillStyle=g;c.fillRect(0,0,W,H);
+ skyGlow(c,W,H,W*(.3+.4*r()),H*(.3+.4*r()),Math.max(W,H)*.6,p[2],.55);
+ c.save();c.globalCompositeOperation="lighter";
+ for(i=0;i<70;i++){
+  var rad=Math.min(W,H)*(.012+.07*r()*r()),x=r()*W,y=r()*H,col=r()>.35?p[3]:p[2];
+  var q=c.createRadialGradient(x,y,0,x,y,rad);q.addColorStop(0,hexA(col,.05));q.addColorStop(.8,hexA(col,.12+.1*r()));q.addColorStop(.93,hexA(col,.4));q.addColorStop(1,hexA(col,0));
+  c.fillStyle=q;c.beginPath();c.arc(x,y,rad,0,7);c.fill();
+ }
+ for(i=0;i<5;i++){
+  var R2=Math.min(W,H)*(.1+.1*r()),cx=W*(.15+.7*r()),cy=H*(.15+.7*r());
+  var cg=c.createRadialGradient(cx-R2*.3,cy-R2*.3,0,cx,cy,R2);cg.addColorStop(0,hexA(p[3],.18));cg.addColorStop(.85,hexA(p[2],.14));cg.addColorStop(1,hexA(p[3],.5));
+  c.fillStyle=cg;c.beginPath();c.arc(cx,cy,R2,0,7);c.fill();
+  c.strokeStyle=hexA(p[3],.5);c.lineWidth=2;c.stroke();
+  var nu=c.createRadialGradient(cx+R2*.1,cy+R2*.05,0,cx+R2*.1,cy+R2*.05,R2*.35);nu.addColorStop(0,hexA(p[3],.55));nu.addColorStop(1,hexA(p[3],0));
+  c.fillStyle=nu;c.beginPath();c.arc(cx+R2*.1,cy+R2*.05,R2*.35,0,7);c.fill();
+ }
+ c.restore();
+}
+
+/* layered silk or dunes */
+function scapeSilk(c,W,H,p,r){
+ var L=8,k,x,g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,mix(p[0],p[1],.4));g.addColorStop(1,p[0]);c.fillStyle=g;c.fillRect(0,0,W,H);
+ skyGlow(c,W,H,W*(.55+.3*r()),H*.2,Math.max(W,H)*.7,p[3],.4);
+ for(k=0;k<L;k++){
+  var t=k/(L-1),base=H*(.28+.6*t),A=H*(.05+.05*r()),B=H*(.02+.02*r()),f1=1.2+r()*1.6,f2=3+r()*3,ph=r()*6;
+  var top=base-A-B;
+  var lg=c.createLinearGradient(0,top,0,H);lg.addColorStop(0,mix(p[3],p[2],.25+.5*t));lg.addColorStop(.35,mix(p[2],p[1],.3+.4*t));lg.addColorStop(1,mix(p[1],p[0],.5+.5*t));
+  c.beginPath();c.moveTo(0,H);
+  for(x=0;x<=W;x+=6)c.lineTo(x,base+Math.sin(x/W*f1*6.283+ph)*A+Math.sin(x/W*f2*6.283+ph*2)*B);
+  c.lineTo(W,H);c.closePath();c.fillStyle=lg;c.fill();
+  c.save();c.shadowColor=p[3];c.shadowBlur=16;c.strokeStyle=hexA(p[3],.5-.3*t);c.lineWidth=2;c.beginPath();
+  for(x=0;x<=W;x+=6){var y=base+Math.sin(x/W*f1*6.283+ph)*A+Math.sin(x/W*f2*6.283+ph*2)*B;x?c.lineTo(x,y):c.moveTo(x,y)}
+  c.stroke();c.restore();
+ }
+}
+
+/* shaded planet with atmosphere */
+function scapePlanet(c,W,H,p,r){
+ var i,n=mkNoise(r),g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,p[0]);g.addColorStop(1,mix(p[0],p[1],.7));c.fillStyle=g;c.fillRect(0,0,W,H);
+ c.save();c.globalCompositeOperation="lighter";for(i=0;i<160;i++){c.fillStyle=hexA(p[3],.1+r()*.5);c.beginPath();c.arc(r()*W,r()*H,r()*1.4+.3,0,7);c.fill()}c.restore();
+ var cx=W*.5,cy=H*.52,R=Math.min(W,H)*.32;
+ c.save();c.globalCompositeOperation="lighter";
+ var at=c.createRadialGradient(cx,cy,R*.9,cx,cy,R*1.8);at.addColorStop(0,hexA(p[3],.5));at.addColorStop(.3,hexA(p[2],.2));at.addColorStop(1,hexA(p[2],0));c.fillStyle=at;c.fillRect(0,0,W,H);c.restore();
+ var bd=c.createRadialGradient(cx-R*.4,cy-R*.45,R*.05,cx,cy,R*1.05);bd.addColorStop(0,p[3]);bd.addColorStop(.45,mix(p[2],p[3],.2));bd.addColorStop(1,p[0]);
+ c.fillStyle=bd;c.beginPath();c.arc(cx,cy,R,0,7);c.fill();
+ c.save();c.beginPath();c.arc(cx,cy,R,0,7);c.clip();
+ for(i=0;i<14;i++){var by=cy-R+(i+.5)*R*2/14;c.beginPath();c.moveTo(cx-R,by);
+  for(var x=-R;x<=R;x+=8)c.lineTo(cx+x,by+(n(x/R*1.5+i*3,3)-.5)*R*.16);
+  c.strokeStyle=(i%2?"rgba(0,0,0,.14)":hexA(p[3],.1));c.lineWidth=R*.07;c.stroke()}
+ var sh=c.createRadialGradient(cx-R*.55,cy-R*.6,R*.3,cx+R*.2,cy+R*.2,R*1.35);sh.addColorStop(0,"rgba(0,0,0,0)");sh.addColorStop(.7,"rgba(0,0,0,.45)");sh.addColorStop(1,"rgba(0,0,0,.85)");
+ c.fillStyle=sh;c.fillRect(cx-R,cy-R,R*2,R*2);c.restore();
+ c.save();c.globalCompositeOperation="lighter";c.strokeStyle=hexA(p[3],.6);c.lineWidth=2;c.shadowColor=p[3];c.shadowBlur=18;c.beginPath();c.arc(cx,cy,R,Math.PI*1.05,Math.PI*1.55);c.stroke();c.restore();
+}
+
+/* still lake with mirrored ridge and sun path */
+function scapeLake(c,W,H,p,r){
+ var n=mkNoise(r),hy=H*.55,x,i,sx=W*(.3+.4*r()),sy=H*.36;
+ var sk=c.createLinearGradient(0,0,0,hy);sk.addColorStop(0,p[0]);sk.addColorStop(1,mix(p[2],p[3],.65));c.fillStyle=sk;c.fillRect(0,0,W,hy);
+ c.save();c.globalCompositeOperation="lighter";skyGlow(c,W,H,sx,sy,Math.max(W,H)*.6,p[3],.5);
+ var sg=c.createRadialGradient(sx,sy,0,sx,sy,Math.min(W,H)*.1);sg.addColorStop(0,hexA("#FFFFFF",.95));sg.addColorStop(.5,hexA(p[3],.8));sg.addColorStop(1,hexA(p[3],0));c.fillStyle=sg;c.beginPath();c.arc(sx,sy,Math.min(W,H)*.1,0,7);c.fill();c.restore();
+ var fr=2.2,off=r()*40,amp=H*.16,rc=mix(p[1],p[0],.55);
+ c.beginPath();c.moveTo(0,hy);for(x=0;x<=W;x+=6)c.lineTo(x,hy-amp*n(x/W*fr+off,5));c.lineTo(W,hy);c.closePath();c.fillStyle=rc;c.fill();
+ var wg=c.createLinearGradient(0,hy,0,H);wg.addColorStop(0,mix(p[2],p[3],.45));wg.addColorStop(1,mix(p[1],p[0],.7));c.fillStyle=wg;c.fillRect(0,hy,W,H-hy);
+ c.save();c.globalAlpha=.55;c.beginPath();c.moveTo(0,hy);for(x=0;x<=W;x+=6)c.lineTo(x,hy+amp*n(x/W*fr+off,5)*.9);c.lineTo(W,hy);c.closePath();c.fillStyle=rc;c.fill();c.restore();
+ c.save();c.globalCompositeOperation="lighter";
+ for(i=0;i<40;i++){var y=hy+8+i*(H-hy)/40,w=Math.min(W,H)*(.16*(1-i/48)+.02)*(.6+r()*.8),xx=sx+(r()-.5)*w*.5;c.fillStyle=hexA(p[3],.5*(1-i/44));c.fillRect(xx-w/2,y,w,1.5+i*.05)}
+ for(i=0;i<70;i++){var yy=hy+r()*(H-hy),ww=W*(.05+.25*r()),xr=r()*W;c.fillStyle=hexA(p[3],.04+.08*r());c.fillRect(xr,yy,ww,1)}
+ c.restore();
+ var mg=c.createLinearGradient(0,hy-H*.06,0,hy+H*.06);mg.addColorStop(0,hexA(mix(p[2],p[3],.6),0));mg.addColorStop(.5,hexA(mix(p[2],p[3],.6),.45));mg.addColorStop(1,hexA(mix(p[2],p[3],.6),0));c.fillStyle=mg;c.fillRect(0,hy-H*.06,W,H*.12);
+}
+
+/* diagnostics lab: perspective grid and signal network */
+function scapeLab(c,W,H,p,r){
+ var hy=H*.55,i,g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,p[0]);g.addColorStop(.55,mix(p[0],p[1],.9));g.addColorStop(1,p[0]);c.fillStyle=g;c.fillRect(0,0,W,H);
+ c.save();c.globalCompositeOperation="lighter";
+ var hg=c.createRadialGradient(W/2,hy,0,W/2,hy,W*.6);hg.addColorStop(0,hexA(p[3],.5));hg.addColorStop(.4,hexA(p[2],.25));hg.addColorStop(1,hexA(p[2],0));
+ c.save();c.translate(0,hy);c.scale(1,.45);c.translate(0,-hy);c.fillStyle=hg;c.fillRect(0,0,W,H*2);c.restore();
+ c.lineWidth=1.4;
+ for(i=-24;i<=24;i++){var xb=W/2+i*W*.09,lg=c.createLinearGradient(0,hy,0,H);lg.addColorStop(0,hexA(p[3],0));lg.addColorStop(1,hexA(p[3],.4));c.strokeStyle=lg;c.beginPath();c.moveTo(W/2+i*W*.006,hy);c.lineTo(xb,H);c.stroke()}
+ for(i=1;i<=16;i++){var y=hy+(H-hy)*Math.pow(i/16,2.1);c.strokeStyle=hexA(p[3],.08+.3*i/16);c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
+ var pts=[];for(i=0;i<16;i++)pts.push([W*(.06+.88*r()),H*(.06+.4*r()),2+r()*4]);
+ c.strokeStyle=hexA(p[3],.28);c.lineWidth=1.2;
+ pts.forEach(function(a,ai){pts.forEach(function(b,bi){if(bi>ai&&Math.hypot(a[0]-b[0],a[1]-b[1])<W*.26){c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}})});
+ pts.forEach(function(a){var q=c.createRadialGradient(a[0],a[1],0,a[0],a[1],a[2]*5);q.addColorStop(0,hexA(p[3],.95));q.addColorStop(.25,hexA(p[3],.5));q.addColorStop(1,hexA(p[3],0));c.fillStyle=q;c.beginPath();c.arc(a[0],a[1],a[2]*5,0,7);c.fill()});
+ c.restore();
+}
+var SCAPES={dawn:scapeRidges,arch:scapeCorridor,rings:scapeCells,waves:scapeSilk,orb:scapePlanet,strata:scapeLake,grid:scapeLab};
+function draw(cv){
+ if(cv.dataset.done)return;cv.dataset.done="1";
+ var W=cv.width=+cv.dataset.w||720,H=cv.height=+cv.dataset.h||900;
+ var c=cv.getContext("2d"),p=PALS[cv.dataset.pal]||PALS.forest,r=rng(+cv.dataset.seed||1);
+ (SCAPES[cv.dataset.art]||scapeRidges)(c,W,H,p,r);
+ finish(c,W,H);
+}
+var artIO=("IntersectionObserver" in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){draw(e.target);artIO.unobserve(e.target)}})},{rootMargin:"600px 0px"}):null;
+function art(root){$$("canvas[data-art]",root).forEach(function(cv){if(cv.dataset.done)return;if(artIO)artIO.observe(cv);else draw(cv)})}
+function cvTag(o,w,h){return '<canvas data-art="'+o.kind+'" data-pal="'+o.pal+'" data-seed="'+o.seed+'" data-w="'+w+'" data-h="'+h+'" aria-hidden="true"></canvas>'}
+
+/* ============ NAV ============ */
+var menuBtn=$("#menuBtn"),mmenu=$("#mmenu");
+function setMenu(o){mmenu.classList.toggle("open",o);menuBtn.setAttribute("aria-expanded",o);menuBtn.textContent=o?"Close":"Menu";document.documentElement.style.overflow=o?"hidden":"";if(o){var f=$("a",mmenu);f&&f.focus({preventScroll:true})}}
+menuBtn.addEventListener("click",function(){setMenu(!mmenu.classList.contains("open"))});
+$$("a",mmenu).forEach(function(a){a.addEventListener("click",function(){setMenu(false)})});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&mmenu.classList.contains("open")){setMenu(false);menuBtn.focus()}});
+mmenu.setAttribute("aria-hidden","true");
+new MutationObserver(function(){mmenu.setAttribute("aria-hidden",!mmenu.classList.contains("open"))}).observe(mmenu,{attributes:true,attributeFilter:["class"]});
+if("IntersectionObserver" in window){
+ var links=$$("#navLinks a"),spy=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.setAttribute("aria-current",a.getAttribute("href")==="#"+e.target.id?"true":"false")})}})},{rootMargin:"-40% 0px -55% 0px"});
+ ["experience","speakers","zones","schedule","exhibitors","tickets","venue"].forEach(function(id){var el=document.getElementById(id);el&&spy.observe(el)});
+}
+
+/* ============ MODAL ============ */
+var modal=$("#modal"),mBody=$("#mBody"),lastFocus=null;
+function openModal(html){lastFocus=document.activeElement;mBody.innerHTML=html;art(mBody);$$("canvas[data-art]",mBody).forEach(draw);modal.classList.remove("closing");if(!modal.open)modal.showModal();document.documentElement.style.overflow="hidden";modal.scrollTop=0}
+function closeModal(){if(!modal.open)return;modal.classList.add("closing");setTimeout(function(){modal.close();modal.classList.remove("closing");document.documentElement.style.overflow="";if(lastFocus&&lastFocus.focus)lastFocus.focus({preventScroll:true})},reduce?0:260)}
+$("#mClose").addEventListener("click",closeModal);
+modal.addEventListener("click",function(e){if(e.target===modal)closeModal()});
+modal.addEventListener("cancel",function(e){e.preventDefault();closeModal()});
+var EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+function field(id,label,type,extra){return '<div class="fld"><label class="mono" for="'+id+'">'+label+'</label><input id="'+id+'" name="'+id+'" type="'+type+'" '+(extra||"")+' aria-describedby="'+id+'Err"><p class="err" id="'+id+'Err" role="status"></p></div>'}
+function setErr(input,msg){var e=document.getElementById(input.id+"Err");if(e)e.textContent=msg||"";input.setAttribute("aria-invalid",msg?"true":"false")}
+function doneView(title,text){return '<div class="m-body"><div class="done"><span class="tick">'+ic("check")+'</span><h2 id="mTitle">'+title+'</h2><p>'+text+'</p><button class="btn btn--ink" data-close style="padding-left:1.6em">Close</button></div></div>'}
+
+/* speakers */
+$("#spkGrid").innerHTML=SPEAKERS.map(function(s,i){
+ var ini=s.name.replace(/^Dr\.\s*/,"").split(" ").map(function(w){return w[0]}).slice(0,2).join("");
+ return '<button class="spk spk--'+s.cls+'" data-spk="'+i+'" aria-label="View profile: '+s.name+'">'+cvTag(s,s.cls==="a"?900:640,s.cls==="a"?1000:640)+
+ '<span class="spk__mono" aria-hidden="true">'+ini+'</span>'+
+ '<span class="spk__top"><span class="pill tag">'+s.cat+'</span><span class="spk__arrow">'+ic("arrow")+'</span></span>'+
+ '<span class="spk__body"><span class="spk__name">'+s.name+'</span><span class="spk__role">'+s.role+'</span>'+
+ '<span class="spk__more"><span><span class="spk__topic">“'+s.topic+'”</span><span class="spk__link mono">View profile</span></span></span></span></button>';
+}).join("");
+
+/* zones */
+var zCats=["All"].concat(ZONES.map(function(z){return z.cat}).filter(function(v,i,a){return a.indexOf(v)===i}));
+$("#zoneFilters").innerHTML=zCats.map(function(c,i){return '<button class="pill" data-zf="'+c+'" aria-pressed="'+(i===0)+'">'+c+'</button>'}).join("");
+$("#zoneTrack").innerHTML=ZONES.map(function(z,i){
+ return '<article class="zone" data-cat="'+z.cat+'" tabindex="0" aria-label="'+z.n+'">'+cvTag(z,640,900)+
+ '<div class="zone__top"><span class="pill tag">'+z.cat+'</span><span class="mono code">Z-'+(i<9?"0":"")+(i+1)+'</span></div>'+
+ '<div class="zone__body"><span class="ibox ibox--lime" style="margin-bottom:14px">'+ic(ZICONS[i])+'</span><h3>'+z.n+'</h3><div class="zone__more"><p><span>'+z.t+'</span></p></div></div></article>';
+}).join("");
+var zTrack=$("#zoneTrack");
+$("#zoneFilters").addEventListener("click",function(e){
+ var b=e.target.closest("[data-zf]");if(!b)return;
+ $$("#zoneFilters .pill").forEach(function(x){x.setAttribute("aria-pressed",x===b)});
+ var cat=b.dataset.zf;$$(".zone",zTrack).forEach(function(z){z.hidden=!(cat==="All"||z.dataset.cat===cat)});
+ zTrack.scrollTo({left:0,behavior:reduce?"auto":"smooth"});art(zTrack);
+});
+function scrollTrack(t,dir){var s=t.querySelector(".zone,.q");var w=s?s.getBoundingClientRect().width+14:300;t.scrollBy({left:dir*w,behavior:reduce?"auto":"smooth"})}
+$("#zPrev").addEventListener("click",function(){scrollTrack(zTrack,-1)});
+$("#zNext").addEventListener("click",function(){scrollTrack(zTrack,1)});
+
+/* schedule */
+var sched={day:1,type:"All"};
+$("#dayTabs").innerHTML=DAYS.map(function(d){return '<button class="pill" data-day="'+d.id+'" aria-pressed="'+(d.id===1)+'">'+d.label+' <small>'+d.date+'</small></button>'}).join("");
+$("#typeTabs").innerHTML=["All"].concat(TYPES).map(function(t){return '<button class="pill" data-type="'+t+'" aria-pressed="'+(t==="All")+'">'+(t==="All"?"":ic(TICON[t]))+(t==="All"?"All sessions":t+(t==="Fitness"?"":"s"))+'</button>'}).join("");
+function renderSched(){
+ var list=SESSIONS.filter(function(s){return s.day===sched.day&&(sched.type==="All"||s.type===sched.type)});
+ var d=DAYS.filter(function(x){return x.id===sched.day})[0];
+ $("#schedCount").textContent=list.length+(list.length===1?" session":" sessions")+" · "+d.date;
+ $("#sessList").innerHTML=list.length?('<div class="sess-list">'+list.map(function(s,i){
+  return '<article class="sess" style="animation-delay:'+(i*60)+'ms"><div class="sess__time">'+s.start+'<small>to '+s.end+'</small></div><div><h3>'+s.title+'</h3><p>'+s.desc+'</p><div class="sess__who"><b>'+s.who+'</b></div></div><div class="sess__side"><span class="pill badge-'+s.type+'">'+ic(TICON[s.type])+s.type+'</span><span class="pill">'+ic("pin")+s.room+'</span></div></article>';
+ }).join("")+'</div>'):('<div class="empty"><b>No sessions match</b><p style="margin:0;color:var(--muted)">There are no '+sched.type.toLowerCase()+' sessions on '+d.label+'. Try another day or clear the filter.</p><button class="btn btn--ink" data-clear style="padding-left:1.6em">Show all sessions'+'</button></div>');
+}
+$("#dayTabs").addEventListener("click",function(e){var b=e.target.closest("[data-day]");if(!b)return;sched.day=+b.dataset.day;$$("#dayTabs .pill").forEach(function(x){x.setAttribute("aria-pressed",x===b)});renderSched()});
+function setType(t){sched.type=t;$$("#typeTabs .pill").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.type===t)});renderSched()}
+$("#typeTabs").addEventListener("click",function(e){var b=e.target.closest("[data-type]");if(b)setType(b.dataset.type)});
+$("#sessList").addEventListener("click",function(e){if(e.target.closest("[data-clear]"))setType("All")});
+renderSched();
+
+/* exhibitors */
+$("#exFilters").innerHTML=["All"].concat(EX_CATS).map(function(c,i){return '<button class="pill" data-ef="'+c+'" aria-pressed="'+(i===0)+'">'+c+'</button>'}).join("");
+function renderEx(cat){
+ var list=EXHIBITORS.map(function(x,i){return {x:x,i:i}}).filter(function(o){return cat==="All"||o.x.cat===cat});
+ $("#exGrid").innerHTML=list.map(function(o){return '<button class="ex" data-ex="'+o.i+'" aria-label="'+o.x.n+', '+o.x.cat+'. View details"><span class="mark '+o.x.m+'">'+o.x.n+'</span><span class="ex__foot mono"><span>'+o.x.cat+'</span>'+ic("arrow")+'</span></button>'}).join("");
+}
+renderEx("All");
+$("#exFilters").addEventListener("click",function(e){var b=e.target.closest("[data-ef]");if(!b)return;$$("#exFilters .pill").forEach(function(x){x.setAttribute("aria-pressed",x===b)});renderEx(b.dataset.ef)});
+
+/* tickets */
+var tier="all";
+function tk(id){return TICKETS.filter(function(t){return t.id===id})[0]}
+function renderTix(){
+ $("#tixGrid").innerHTML=TICKETS.map(function(t){
+  return '<button class="tk'+(t.feat?" tk--feat":"")+'" data-tk="'+t.id+'" aria-pressed="'+(tier===t.id)+'">'+(t.feat?'<span class="pill tk__flag">Most popular</span>':'')+
+  '<span class="tk__icon">'+ic(t.icon)+'</span><h3>'+t.name+'</h3><div class="price">$'+t.price+'<small>Sample price</small></div>'+
+  '<ul>'+t.items.map(function(i){return '<li>'+ic("check")+'<span>'+i+'</span></li>'}).join("")+'</ul>'+
+  '<span class="tk__sel"><span>'+(tier===t.id?"Selected":"Select this ticket")+'</span>'+(tier===t.id?ic("check"):ic("arrow"))+'</span></button>';
+ }).join("");
+ var t=tk(tier);
+ $("#tixBar").innerHTML='<span><span class="mono" style="opacity:.7">Your selection</span><br><b style="font:800 1.3rem var(--display);letter-spacing:-.02em">'+t.name+' · $'+t.price+'</b></span><button class="btn btn--lime" data-checkout>Continue to checkout (demo) '+arr()+'</button>';
+}
+$("#tixGrid").addEventListener("click",function(e){var b=e.target.closest("[data-tk]");if(!b)return;tier=b.dataset.tk;renderTix();var n=$('[data-tk="'+tier+'"]');n&&n.focus({preventScroll:true})});
+renderTix();
+function checkoutView(qty){
+ var t=tk(tier);
+ return '<div class="m-body"><span class="pill" style="width:max-content">Demo checkout</span><h2 id="mTitle">'+t.name+'</h2>'+
+ '<p>This is a placeholder. No payment is taken and nothing you enter is stored.</p>'+
+ '<form class="form" id="coForm" novalidate>'+field("coName","Full name","text",'autocomplete="name"')+field("coEmail","Email","email",'autocomplete="email"')+
+ '<div class="sum"><div class="stepper" role="group" aria-label="Quantity"><button type="button" data-qty="-1" aria-label="Fewer tickets">−</button><output id="qty" aria-live="polite">'+qty+'</output><button type="button" data-qty="1" aria-label="More tickets">+</button></div><span>Total <b id="total">$'+(t.price*qty)+'</b></span></div>'+
+ '<button class="btn btn--ink" type="submit" style="padding-left:1.6em;justify-content:space-between">Reserve (demo) '+arr()+'</button></form></div>';
+}
+var qty=1;
+
+/* testimonials */
+$("#tmTrack").innerHTML=QUOTES.map(function(q,i){return '<figure class="q" aria-label="Testimonial '+(i+1)+' of '+QUOTES.length+'"><blockquote>“'+q.q+'”</blockquote><figcaption><div class="av">'+cvTag({kind:"orb",pal:i%2?"champagne":"sage",seed:q.seed},300,400)+'</div><div><b>'+q.n+'</b><span>'+q.r+'</span></div><span class="pill" style="width:max-content">Sample quote</span></figcaption></figure>'}).join("");
+$("#tmDots").innerHTML=QUOTES.map(function(q,i){return '<button data-dot="'+i+'" aria-label="Go to testimonial '+(i+1)+'" aria-current="'+(i===0)+'"></button>'}).join("");
+var tm=$("#tmTrack");
+function tmIdx(){return Math.round(tm.scrollLeft/(tm.clientWidth+16))}
+tm.addEventListener("scroll",function(){var n=tmIdx();$$("#tmDots button").forEach(function(b,i){b.setAttribute("aria-current",i===n)})},{passive:true});
+function tmGo(i){i=Math.max(0,Math.min(QUOTES.length-1,i));tm.scrollTo({left:i*(tm.clientWidth+16),behavior:reduce?"auto":"smooth"})}
+$("#tPrev").addEventListener("click",function(){tmGo(tmIdx()-1)});
+$("#tNext").addEventListener("click",function(){tmGo(tmIdx()+1)});
+$("#tmDots").addEventListener("click",function(e){var b=e.target.closest("[data-dot]");if(b)tmGo(+b.dataset.dot)});
+tm.addEventListener("keydown",function(e){if(e.key==="ArrowRight"){e.preventDefault();tmGo(tmIdx()+1)}else if(e.key==="ArrowLeft"){e.preventDefault();tmGo(tmIdx()-1)}});
+
+/* ============ GLOBAL CLICKS ============ */
+document.addEventListener("click",function(e){
+ var t;
+ if((t=e.target.closest("[data-spk]"))){
+  var s=SPEAKERS[+t.dataset.spk];
+  openModal('<div class="m-img">'+cvTag(s,1200,600)+'</div><div class="m-body"><span class="pill tag" style="width:max-content">'+s.cat+'</span><h2 id="mTitle">'+s.name+'</h2><p class="mono">'+s.role+'</p><p class="topic">“'+s.topic+'”</p><p>'+s.bio+'</p><div class="demo">Sample profile for layout. Replace with confirmed speaker details.</div><button class="btn btn--ink" data-open-sess style="padding-left:1.6em;width:max-content">See schedule '+arr()+'</button></div>');
+  return;
+ }
+ if((t=e.target.closest("[data-ex]"))){
+  var x=EXHIBITORS[+t.dataset.ex];
+  openModal('<div class="m-body"><span class="pill" style="width:max-content">'+x.cat+' · Stand '+x.booth+'</span><h2 id="mTitle">'+x.n+'</h2><p>'+x.d+'</p><div class="demo">Placeholder brand for layout. Not a confirmed exhibitor or partner.</div></div>');
+  return;
+ }
+ if((t=e.target.closest("[data-enq]"))){
+  var kind=t.dataset.enq;
+  if(kind==="stay"){openModal('<div class="m-body"><span class="pill" style="width:max-content">Accommodation</span><h2 id="mTitle">Where to stay</h2><p>Partner hotels, rates and booking codes will be listed here once confirmed.</p><div class="demo">Placeholder content. Add your accommodation partners and booking links.</div></div>')}
+  else{openModal('<div class="m-body"><span class="pill" style="width:max-content">Exhibitor enquiry</span><h2 id="mTitle">Take a stand</h2><p>Tell us about your brand. This form is a demo: nothing is sent or stored.</p><form class="form" id="enqForm" novalidate>'+field("enqName","Your name","text",'autocomplete="name"')+field("enqCo","Company or practice","text",'autocomplete="organization"')+field("enqEmail","Email","email",'autocomplete="email"')+'<button class="btn btn--ink" type="submit" style="padding-left:1.6em;justify-content:space-between">Send enquiry (demo) '+arr()+'</button></form></div>')}
+  return;
+ }
+ if(e.target.closest("[data-checkout]")){qty=1;openModal(checkoutView(qty));return}
+ if((t=e.target.closest("[data-qty]"))){qty=Math.max(1,Math.min(10,qty+(+t.dataset.qty)));$("#qty").textContent=qty;$("#total").textContent="$"+(tk(tier).price*qty);return}
+ if((t=e.target.closest("[data-policy]"))){openModal('<div class="m-body"><span class="pill" style="width:max-content">Placeholder</span><h2 id="mTitle">'+t.dataset.policy+'</h2><p>Add your '+t.dataset.policy.toLowerCase()+' text here before launch. This sample site collects no data.</p></div>');return}
+ if(e.target.closest("[data-close]")){closeModal();return}
+ if(e.target.closest("[data-open-sess]")){closeModal();var sc=$("#schedule");setTimeout(function(){sc.scrollIntoView({behavior:reduce?"auto":"smooth"})},300);return}
+ if(e.target.closest("#updatesBtn")){var f=$("#footer");f.scrollIntoView({behavior:reduce?"auto":"smooth"});setTimeout(function(){$("#nlEmail").focus({preventScroll:true})},reduce?0:700);return}
+});
+
+/* forms */
+document.addEventListener("submit",function(e){
+ var f=e.target;e.preventDefault();
+ if(f.id==="nlForm"){
+  var inp=$("#nlEmail"),msg=$("#nlMsg");
+  if(!EMAIL.test(inp.value.trim())){msg.className="err";msg.textContent="Enter a valid email address, like name@example.com.";inp.setAttribute("aria-invalid","true");inp.focus();return}
+  inp.setAttribute("aria-invalid","false");msg.className="ok";msg.textContent="Thanks. This form is a demo, so your address was not saved.";inp.value="";return;
+ }
+ if(f.id==="coForm"||f.id==="enqForm"){
+  var bad=false;
+  $$("input",f).forEach(function(i){
+   var v=i.value.trim(),m="";
+   if(i.type==="email"){if(!v)m="Enter your email address.";else if(!EMAIL.test(v))m="Enter a valid email address, like name@example.com."}
+   else if(!v)m="Fill in this field.";
+   setErr(i,m);if(m&&!bad){bad=true;i.focus()}
+  });
+  if(bad)return;
+  mBody.innerHTML=f.id==="coForm"?doneView("Demo reservation complete","No payment was taken and nothing was stored. Connect a payment provider to sell real tickets."):doneView("Enquiry received (demo)","Nothing was sent or stored. Connect a form service to receive real enquiries.");
+  var c=$("[data-close]",mBody);c&&c.focus();
+ }
+});
+document.addEventListener("input",function(e){var i=e.target;if(i.getAttribute&&i.getAttribute("aria-invalid")==="true"&&i.value.trim())setErr(i,"")});
+
+/* ============ MOTION ============ */
+// scroll reveal: only elements below the fold at load get the pre-state; all end visible
+if("IntersectionObserver" in window&&!reduce){
+ var vh=innerHeight;
+ var rvs=$$(".rv").filter(function(el){return el.getBoundingClientRect().top>vh});
+ rvs.forEach(function(el){el.classList.add("pre")});
+ var rvIO=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.remove("pre");rvIO.unobserve(e.target)}})},{rootMargin:"0px 0px -8% 0px"});
+ rvs.forEach(function(el){rvIO.observe(el)});
+}
+// parallax + scroll-linked reveal
+var par=$$("[data-par]"),media=$("#storyMedia"),scv=$("#storyCv"),ticking=false;
+function frame(){
+ ticking=false;var y=scrollY,vh=innerHeight;
+ if(!reduce){
+  if(y<1600)par.forEach(function(el){el.style.transform="translate3d(0,"+(y*parseFloat(el.dataset.par)).toFixed(1)+"px,0)"});
+  var r=media.parentElement.getBoundingClientRect();
+  if(r.bottom>0&&r.top<vh){
+   var p=Math.min(1,Math.max(0,(vh-r.top)/(vh*.7)));
+   media.style.setProperty("--in",((1-p)*8).toFixed(2)+"%");
+   scv.style.transform="translate3d(0,"+(((r.top+r.height/2)-vh/2)*-.08).toFixed(1)+"px,0) scale(1.05)";
+  }
+ }else media.style.setProperty("--in","0%");
+}
+addEventListener("scroll",function(){if(!ticking){ticking=true;requestAnimationFrame(frame)}},{passive:true});
+addEventListener("resize",frame);
+
+/* boot */
+art(document);
+$$(".hero canvas[data-art]").forEach(draw);
+frame();
+})();
+</script>
